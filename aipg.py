@@ -107,24 +107,10 @@ if selected_tab == "tab3":
     followup = """
     **Conclusions:**
 
-    1. **Health Benefits and Allergen-Free Marketing**:
-        - Emphasize health benefits and allergen-free aspects in marketing campaigns.
-        - Highlight the growing trend in demand for allergen-free products.
+    **Refine the Flavor Profile with Natural Ingredients**: To cater to both taste preferences and health-conscious consumers, refine the mango flavor using natural mango puree or extracts, and reduce the sugar content. This can improve the product’s authenticity and appeal to health-conscious segments, while still maintaining the refreshing Coca-Cola experience.
 
-    2. **Packaging Design**:
-        - Create visually appealing packaging.
-        - Clearly indicate that the product is allergen-free.
-        - Use earthy tones to emphasize natural ingredients.
+    **Target Regional Preferences and Position as a Functional Beverage**: Conduct regional flavor testing to identify local preferences (e.g., tropical fruit variants) and customize marketing strategies accordingly. Position **Coca-Cola Mango Boost** not just as a flavored soft drink, but as a functional beverage with added benefits like vitamins or electrolytes to attract health-focused consumers, especially within younger demographics.
 
-    3. **Data-Driven Strategy**:
-        - Gather more data on consumer preferences for allergen-free products.
-        - Leverage data to support marketing and product positioning strategies.
-
-    4. **Action Items**:
-        - Jamie (Marketing Specialist): Draft a marketing strategy focusing on health benefits and allergen-free aspects.
-        - Taylor (Design Lead): Start working on the packaging design with earthy tones.
-        - Jordan (Data Analyst): Gather additional data on consumer preferences.
-        - Team: Reconvene next week to review progress.
     """
     st.markdown(followup)
 
@@ -133,23 +119,36 @@ if selected_tab == "tab3":
     col1, col2, col3 = st.columns([1, 1, 1])  
 
     with col1:
-        st.image("https://plus.unsplash.com/premium_photo-1675283825474-390ea83c0703?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3", caption="Chocolate Bar 1")
+        st.image("images/mango1.jpeg", caption="Coca Cola Natural Mango")
         st.markdown("""
-        **Chocolate Bar 1**:
-        - Allergen-free
-        - Rich in antioxidants
-        - Made with organic ingredients
+        **Coca Cola Natural Mango**:
+        - Made with real mango puree
+        - No added sugar
+        - Refreshing and natural taste
         """)
     with col2:    
-        st.image("https://images.unsplash.com/photo-1698076184862-cfb8aea421b3?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3", caption="Chocolate Bar 2")
+        st.image("images/mango2.jpeg", caption="Coca Cola Natural Strawberry")
         st.markdown("""
-        **Chocolate Bar 2**:
-        - Gluten-free
-        - High in fiber
-        - Contains no added sugar
+        **Coca Cola Natural Strawberry**:
+        - Made with real strawberry puree
+        - No added sugar
+        - Refreshing and natural taste
         """)
     with col3:    
-        st.image("https://plus.unsplash.com/premium_photo-1667031519185-3dad7d8931cd?q=80&w=400&auto=format&fit=crop&ixlib=rb-4.0.3", caption="Chocolate Bar 3")
+        st.image("images/mango3.jpeg", caption="Coca Cola Natural Mango")
+        st.markdown("""
+        **Coca Cola Natural Strawberry Mango**:
+        - Made with real strawberry mango puree
+        - No added sugar
+        - Refreshing and natural taste
+        """)
+
+
+    st.subheader("Final product idea")
+    col1, col2, = st.columns([2, 1])  
+    with col1:
+        st.image("images/mango1.jpeg", caption="Coca Cola Natural Mango", use_container_width=True)
+    with col2:
         st.markdown("""
         **Chocolate Bar 3**:
         - Dairy-free
@@ -170,29 +169,32 @@ if selected_tab == "tab3":
 if selected_tab == "tab4":
     st.title("Virtual consumer panel")
 
-    st.subheader("Final product idea")
-    col1, col2, = st.columns([2, 1])  
-    with col1:
-        st.image("https://plus.unsplash.com/premium_photo-1667031519185-3dad7d8931cd?q=80&w=400&auto=format&fit=crop&ixlib=rb-4.0.3", caption="Chocolate Bar 3", use_container_width=True)
-    with col2:
-        st.markdown("""
-        **Chocolate Bar 3**:
-        - Dairy-free
-        - Vegan-friendly
-        - Infused with natural flavors
-        """)
+
 
     st.subheader("Panelists")
     st.image("https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?q=80&w=900&auto=format&fit=crop&ixlib=rb-4.0.3", caption="America", use_container_width=True)
    
-    st.subheader("Incoming analysis")
+    st.subheader("Product uniqueness")
     st.bar_chart(np.random.randn(30, 3))   
     st.title("Comming soon")
     st.text("Simulate real life situations")  
 
 if selected_tab == "tab5":
-    st.title("Final insights")    
-    st.subheader("Incoming analysis")
-    st.area_chart(np.random.randn(30, 3))        
-    st.line_chart(np.random.randn(30, 3))        
-    st.bar_chart(np.random.randn(30, 3))      
+    st.title("Final insights") 
+    col1, col2, = st.columns([2, 1])     
+    with col1:
+        st.subheader("Product uniqueness")
+        st.area_chart(np.random.randn(30, 3))        
+        st.line_chart(np.random.randn(30, 3))        
+        st.bar_chart(np.random.randn(30, 3))      
+
+    with col2:
+        st.subheader("Filter insights by")
+
+        age_filter = st.selectbox("Age", ["<20", "20-30", "30-40", "40-50", "50-60", "60-70", "70-80", "80+"])
+        gender_filter = st.selectbox("Gender", ["Male", "Female"])
+
+        st.write(f"Filtering insights for age group: {age_filter} and gender: {gender_filter}")
+
+        # Placeholder for filtered insights logic
+        st.text("Filtered insights will be displayed here based on the selected filters.")
