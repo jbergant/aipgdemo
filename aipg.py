@@ -27,9 +27,9 @@ def set_selected_nav(index):
 
 with col2:
     if st.session_state.selected_nav == 0:
-        st.button("Product description", type="primary")
+        st.button("Product brief", type="primary")
     else:
-        if st.button("Product description"):
+        if st.button("Product brief"):
             set_selected_nav(0)
 
 with col3:
