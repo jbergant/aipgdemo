@@ -310,7 +310,7 @@ if st.session_state.selected_nav == 4:
                 return "#E55039"  # Red (Below Norm)
 
         # Streamlit UI
-        st.title("Concept Evaluation Dashboard")
+        st.subheader("Concept Evaluation Dashboard")
         st.write("### Performance Metrics")
 
         # Create Donut Charts
@@ -349,7 +349,7 @@ if st.session_state.selected_nav == 4:
         purchase_consideration = np.array([90, 80, 65, 50, 35, 25, 15, 5])
 
         # Streamlit UI
-        st.title("Demand Curve: Price vs Purchase Consideration")
+        st.subheader("Demand Curve: Price vs Purchase Consideration")
         st.write("This graph shows how the percentage of target consumers considering purchase changes with price.")
 
         # Create the graph
