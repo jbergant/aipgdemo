@@ -252,7 +252,7 @@ if st.session_state.selected_nav == 2:
             st.text("No product idea selected.")
 
 
-    st.subheader("Your Comments & Ideas")
+    st.subheader("Refine the product")
     user_idea = st.text_area("Share your product idea or feedback here")
 
     if st.button("Submit comments"):
