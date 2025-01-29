@@ -261,6 +261,11 @@ if st.session_state.selected_nav == 2:
                 time.sleep(2)  
             st.success("To be implemented!")
 
+    col1, col2 = st.columns([9, 1])
+    with col2:
+        if(st.button("To virtual consumer panel")):
+            set_selected_nav(3)            
+
 if st.session_state.selected_nav == 3:
     st.title("Virtual consumer panel")
     col1, col2, = st.columns([2, 1])   
@@ -281,6 +286,11 @@ if st.session_state.selected_nav == 3:
     st.bar_chart(np.random.randn(30, 3))   
     st.title("Comming soon")
     st.text("Simulate real life situations")  
+
+    col1, col2 = st.columns([9, 1])
+    with col2:
+        if(st.button("To final insights")):
+            set_selected_nav(4)      
 
 if st.session_state.selected_nav == 4:
     st.title("Final insights") 
