@@ -1,6 +1,7 @@
 import streamlit as st
 import numpy as np
-import extra_streamlit_components as stx
+import plotly.graph_objects as go
+import matplotlib.pyplot as plt
 import time
 
 def typewriter(text: str, speed: int):
@@ -61,8 +62,57 @@ with col5:
 
 if st.session_state.selected_nav == 0:
     st.title("Product brief")
+    sample_product_brief = """Product Name: Coca-Cola Mango (Working Title)
 
-    product_description = st.text_area("Enter product keypoints")
+Category: Carbonated Soft Drinks
+
+Brand: Coca-Cola
+
+Stage: Concept Exploration
+
+1. Product Overview
+
+Coca-Cola Mango is an idea for a new, fruit-infused cola variant. The goal is to explore whether a tropical twist on the classic Coca-Cola taste could excite consumers. The product would balance the familiar cola profile with a hint of ripe mango, offering a refreshing, potentially exotic experience.
+
+Key Questions:
+
+- How strong should the mango flavor be?
+- Should this be a limited-edition or permanent SKU?
+- Does the market perceive mango as a complementary or competing flavor to cola?
+
+2. Target Audience (Tentative)
+
+- Existing Coca-Cola drinkers looking for variety
+- Gen Z and Millennials, who seek new and adventurous flavors
+- Fans of tropical fruit beverages
+- Markets where mango is a popular flavor (e.g., Latin America, South Asia)
+
+3. Unique Selling Proposition (USP) (Still Developing)
+
+- A tropical twist on a global classic
+- Potentially a healthier alternative (lower sugar? natural flavors?)
+- A seasonal or limited-edition buzz generator
+
+4. Key Features & Considerations
+
+Feature: Questions & Hypotheses
+- Mango Flavor Infusion: Should it be subtle or bold? Artificial or real juice?
+- Sugar & Calories: Should we offer a zero-sugar variant from launch?
+- Carbonation Level: Does mango pair better with standard or lighter fizz?
+- Packaging: Do we highlight mango in branding or keep it subtle?
+
+5. Packaging (Early Thoughts)
+
+- Format: Cans? Bottles? Multi-pack options?
+- Design: Classic Coca-Cola branding with a mango color cue?
+- Labeling: Should we emphasize "limited edition" to drive urgency?
+
+6. Pricing Strategy (To Be Determined)
+
+- Should it be priced at parity with existing flavored Coke variants?
+- Would a higher price point position it as a premium, exotic offering?"""
+
+    product_description = st.text_area("Write product brief:", height=600, placeholder=sample_product_brief)
 
     product_image = st.file_uploader("Upload product idea image", type=["jpg", "jpeg", "png"])
 
@@ -213,12 +263,20 @@ if st.session_state.selected_nav == 2:
 
 if st.session_state.selected_nav == 3:
     st.title("Virtual consumer panel")
+    col1, col2, = st.columns([2, 1])   
 
+    with col1:
+        st.subheader("Panelists")
+        st.image("https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?q=80&w=900&auto=format&fit=crop&ixlib=rb-4.0.3", caption="America", use_container_width=True)
+    
+    with col2:
+        st.subheader("Filter panelists by:")
 
+        age_filter = st.selectbox("Age", ["<20", "20-30", "30-40", "40-50", "50-60", "60-70", "70-80", "80+"])
+        gender_filter = st.selectbox("Gender", ["Male", "Female"])
 
-    st.subheader("Panelists")
-    st.image("https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?q=80&w=900&auto=format&fit=crop&ixlib=rb-4.0.3", caption="America", use_container_width=True)
-   
+        st.write(f"Filtering panelists for age group: {age_filter} and gender: {gender_filter}")
+
     st.subheader("Product uniqueness")
     st.bar_chart(np.random.randn(30, 3))   
     st.title("Comming soon")
@@ -228,13 +286,97 @@ if st.session_state.selected_nav == 4:
     st.title("Final insights") 
     col1, col2, = st.columns([2, 1])     
     with col1:
-        st.subheader("Product uniqueness") # kako izgledajo grafi
+
+
+
+
+
+
+        # Sample Data
+        data = {
+            "Purchase Intent": {"score": 3.9, "norm": 4.0},
+            "Unique And Different": {"score": 3.9, "norm": 3.9},
+            "Relevance": {"score": 4.0, "norm": 4.1},
+            "Overall Appeal": {"score": 3.9, "norm": 4.2},
+        }
+
+        # Color function based on performance
+        def get_color(score, norm):
+            if score >= norm:
+                return "#6AB04C"  # Green (Above Norm)
+            elif score >= norm - 0.2:
+                return "#F7CA18"  # Yellow (In Line)
+            else:
+                return "#E55039"  # Red (Below Norm)
+
+        # Streamlit UI
+        st.title("Concept Evaluation Dashboard")
+        st.write("### Performance Metrics")
+
+        # Create Donut Charts
+        cols = st.columns(len(data))  # Creates equal column sections
+        for i, (metric, values) in enumerate(data.items()):
+            score = values["score"]
+            norm = values["norm"]
+            color = get_color(score, norm)
+            
+            fig = go.Figure(go.Pie(
+                values=[score, norm - score, 5 - norm],
+                labels=["Score", "Norm Difference", "Remaining"],
+                hole=0.6,
+                marker=dict(colors=[color, "#D3D3D3", "#F4F4F4"]),
+                textinfo='none'
+            ))
+            
+            fig.update_layout(
+                showlegend=False,
+                title={
+                    "text": f"<b>{metric}</b><br>{score} (Norm: {norm})",
+                    "y": 0.9, "x": 0.5, "xanchor": "center", "yanchor": "top",
+                    "font": dict(size=14)
+                },
+                margin=dict(l=20, r=20, t=40, b=20)
+            )
+            
+            cols[i].plotly_chart(fig, use_container_width=True)
+
+        st.write("### Legend")
+        st.markdown("- **🟢 Green**: Significantly above norm\n- **🟡 Yellow**: In line with norm\n- **🔴 Red**: Below norm")
+
+
+        # Sample data (Price vs Purchase Consideration %)
+        price = np.array([0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4])
+        purchase_consideration = np.array([90, 80, 65, 50, 35, 25, 15, 5])
+
+        # Streamlit UI
+        st.title("Demand Curve: Price vs Purchase Consideration")
+        st.write("This graph shows how the percentage of target consumers considering purchase changes with price.")
+
+        # Create the graph
+        fig, ax = plt.subplots()
+        ax.plot(purchase_consideration, price, marker='o', linestyle='-', color='b')
+        ax.set_xlabel("Purchasing Consideration (% of Target Population)")
+        ax.set_ylabel("Price ($)")
+        ax.set_title("Demand Curve")
+        ax.grid(True)
+
+        # Display the graph in Streamlit
+        st.pyplot(fig)
+
+        # Explanation
+        st.write("### Interpretation:")
+        st.write("- As price increases, fewer consumers are willing to consider purchasing.")
+        st.write("- This follows the typical demand curve behavior.")
+
+
+        
+        st.subheader("Extra data") 
         st.area_chart(np.random.randn(30, 3))        
         st.line_chart(np.random.randn(30, 3))        
         st.bar_chart(np.random.randn(30, 3))      
 
     with col2:
-        st.subheader("Filter insights by")
+        st.subheader("Filter insights by:")
 
         age_filter = st.selectbox("Age", ["<20", "20-30", "30-40", "40-50", "50-60", "60-70", "70-80", "80+"])
         gender_filter = st.selectbox("Gender", ["Male", "Female"])
