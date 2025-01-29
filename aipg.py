@@ -13,19 +13,56 @@ def typewriter(text: str, speed: int):
 
 
 st.set_page_config(layout="wide")
-tabs = [
-    stx.TabBarItemData(id="tab1", title="Product description", description=""),
-    stx.TabBarItemData(id="tab2", title="AI inovation LAB", description=""),
-    stx.TabBarItemData(id="tab3", title="Product refinement", description=""),
-    stx.TabBarItemData(id="tab4", title="Virtual consumer panel", description=""),
-    stx.TabBarItemData(id="tab5", title="Final insights", description=""),
-]
-selected_tab = stx.tab_bar(data=tabs, default="tab1")
 
-if selected_tab == "tab1":
-    st.title("Product description")
 
-    product_description = st.text_area("Enter product description here")
+col1, col2, col3, col4, col5 = st.columns(5)
+
+if 'selected_nav' not in st.session_state:
+    st.session_state.selected_nav = 0
+
+def set_selected_nav(index):
+    st.session_state.selected_nav = index
+    st.rerun()  # Forces an immediate rerun
+
+with col1:
+    if st.session_state.selected_nav == 0:
+        st.button("Product description", type="primary")
+    else:
+        if st.button("Product description"):
+            set_selected_nav(0)
+
+with col2:
+    if st.session_state.selected_nav == 1:
+        st.button("AI innovation LAB", type="primary")
+    else:   
+        if st.button("AI innovation LAB"):
+            set_selected_nav(1)
+
+with col3:
+    if st.session_state.selected_nav == 2:
+        st.button("Product refinement", type="primary")
+    else:
+        if st.button("Product refinement"):
+            set_selected_nav(2)
+
+with col4:
+    if st.session_state.selected_nav == 3:
+        st.button("Virtual consumer panel", type="primary")
+    else:
+        if st.button("Virtual consumer panel"):
+            set_selected_nav(3)
+
+with col5:
+    if st.session_state.selected_nav == 4:
+        st.button("Final insights", type="primary")
+    else:
+        if st.button("Final insights"):
+            set_selected_nav(4)
+
+if st.session_state.selected_nav == 0:
+    st.title("Product brief")
+
+    product_description = st.text_area("Enter product keypoints")
 
     product_image = st.file_uploader("Upload product idea image", type=["jpg", "jpeg", "png"])
 
@@ -36,12 +73,16 @@ if selected_tab == "tab1":
 
     st.text("Personalised your product description with brand detailes and related product sales data.")
 
+    col1, col2 = st.columns([9, 1])
+    with col2:
+        if(st.button("To Innovation lab")):
+            set_selected_nav(1)
 
-if selected_tab == "tab2":
+if st.session_state.selected_nav == 1:
     st.title("AI inovation LAB")
     left_col, right_col = st.columns([2, 1])  
     with left_col:   
-        speed = 10
+        speed = 101
     
         if 'messages' not in st.session_state:
             st.session_state.messages = [
@@ -67,6 +108,47 @@ if selected_tab == "tab2":
             if message["role"] == "user":
                 with st.chat_message("user", avatar=message["avatar"]):
                     typewriter(text=message["content"], speed=speed)
+
+
+
+
+        st.subheader("Product Ideas")
+
+        col1, col2, col3 = st.columns([1, 1, 1])  
+
+        with col1:
+            st.image("images/mango1.jpeg", caption="Coca Cola Natural Mango")
+            st.markdown("""
+            **Coca Cola Natural Mango**:
+            - Made with real mango puree
+            - No added sugar
+            - Refreshing and natural taste
+            """)
+            if st.button("Select idea", key="idea1"):
+                st.session_state.selected_idea = "Coca Cola Natural Mango"
+                set_selected_nav(2)
+        with col2:    
+            st.image("images/mango2.jpeg", caption="Coca Cola Natural Strawberry")
+            st.markdown("""
+            **Coca Cola Natural Strawberry**:
+            - Made with real strawberry puree
+            - No added sugar
+            - Refreshing and natural taste
+            """)
+            if st.button("Select idea", key="idea2"):
+                st.session_state.selected_idea = "Coca Cola Natural Strawberry"
+                set_selected_nav(2)
+        with col3:    
+            st.image("images/mango3.jpeg", caption="Coca Cola Natural Strawberry Mango")
+            st.markdown("""
+            **Coca Cola Natural Strawberry Mango**:
+            - Made with real strawberry mango puree
+            - No added sugar
+            - Refreshing and natural taste
+            """)    
+            if st.button("Select idea", key="idea3"):
+                st.session_state.selected_idea = "Coca Cola Natural Strawberry Mango"  
+                set_selected_nav(2)              
     with right_col:
         st.subheader("Recommendations")   
         followup = """
@@ -74,26 +156,6 @@ if selected_tab == "tab2":
 
         **Target Regional Preferences and Position as a Functional Beverage**: Conduct regional flavor testing to identify local preferences (e.g., tropical fruit variants) and customize marketing strategies accordingly. Position **Coca-Cola Mango Boost** not just as a flavored soft drink, but as a functional beverage with added benefits like vitamins or electrolytes to attract health-focused consumers, especially within younger demographics.
         """  
-        # followup = """
-        # 1. **Health Benefits and Allergen-Free Marketing**:
-        #     - Emphasize health benefits and allergen-free aspects in marketing campaigns.
-        #     - Highlight the growing trend in demand for allergen-free products.
-
-        # 2. **Packaging Design**:
-        #     - Create visually appealing packaging.
-        #     - Clearly indicate that the product is allergen-free.
-        #     - Use earthy tones to emphasize natural ingredients.
-
-        # 3. **Data-Driven Strategy**:
-        #     - Gather more data on consumer preferences for allergen-free products.
-        #     - Leverage data to support marketing and product positioning strategies.
-
-        # 4. **Action Items**:
-        #     - Jamie (Marketing Specialist): Draft a marketing strategy focusing on health benefits and allergen-free aspects.
-        #     - Taylor (Design Lead): Start working on the packaging design with earthy tones.
-        #     - Jordan (Data Analyst): Gather additional data on consumer preferences.
-        #     - Team: Reconvene next week to review progress.
-        # """
         st.markdown(followup)
 
 
@@ -101,7 +163,7 @@ if selected_tab == "tab2":
     st.text("Use real time events data from online sources.")     
               
 
-if selected_tab == "tab3":
+if st.session_state.selected_nav == 2:
     st.title("Product refinement")
     st.subheader("AI inovation LAB insights")        
     followup = """
@@ -114,47 +176,30 @@ if selected_tab == "tab3":
     """
     st.markdown(followup)
 
-    st.subheader("Product Ideas")
-
-    col1, col2, col3 = st.columns([1, 1, 1])  
-
-    with col1:
-        st.image("images/mango1.jpeg", caption="Coca Cola Natural Mango")
-        st.markdown("""
-        **Coca Cola Natural Mango**:
-        - Made with real mango puree
-        - No added sugar
-        - Refreshing and natural taste
-        """)
-    with col2:    
-        st.image("images/mango2.jpeg", caption="Coca Cola Natural Strawberry")
-        st.markdown("""
-        **Coca Cola Natural Strawberry**:
-        - Made with real strawberry puree
-        - No added sugar
-        - Refreshing and natural taste
-        """)
-    with col3:    
-        st.image("images/mango3.jpeg", caption="Coca Cola Natural Mango")
-        st.markdown("""
-        **Coca Cola Natural Strawberry Mango**:
-        - Made with real strawberry mango puree
-        - No added sugar
-        - Refreshing and natural taste
-        """)
 
 
     st.subheader("Final product idea")
     col1, col2, = st.columns([2, 1])  
     with col1:
-        st.image("images/mango1.jpeg", caption="Coca Cola Natural Mango", use_container_width=True)
+        if 'selected_idea' in st.session_state:
+            if st.session_state.selected_idea == "Coca Cola Natural Mango":
+                st.image("images/mango1.jpeg", caption="Coca Cola Natural Mango", use_container_width=True)
+            elif st.session_state.selected_idea == "Coca Cola Natural Strawberry":
+                st.image("images/mango2.jpeg", caption="Coca Cola Natural Strawberry", use_container_width=True)
+            elif st.session_state.selected_idea == "Coca Cola Natural Strawberry Mango":
+                st.image("images/mango3.jpeg", caption="Coca Cola Natural Strawberry Mango", use_container_width=True)
+        else:
+            st.text("No product idea selected.")
     with col2:
-        st.markdown("""
-        **Chocolate Bar 3**:
-        - Dairy-free
-        - Vegan-friendly
-        - Infused with natural flavors
-        """)
+        if 'selected_idea' in st.session_state:
+            st.markdown(f"""
+            **{st.session_state.selected_idea}**:
+            - Dairy-free
+            - Vegan-friendly
+            - Infused with natural flavors
+            """)
+        else:
+            st.text("No product idea selected.")
 
 
     st.subheader("Your Comments & Ideas")
@@ -166,7 +211,7 @@ if selected_tab == "tab3":
                 time.sleep(2)  
             st.success("To be implemented!")
 
-if selected_tab == "tab4":
+if st.session_state.selected_nav == 3:
     st.title("Virtual consumer panel")
 
 
@@ -179,11 +224,11 @@ if selected_tab == "tab4":
     st.title("Comming soon")
     st.text("Simulate real life situations")  
 
-if selected_tab == "tab5":
+if st.session_state.selected_nav == 4:
     st.title("Final insights") 
     col1, col2, = st.columns([2, 1])     
     with col1:
-        st.subheader("Product uniqueness")
+        st.subheader("Product uniqueness") # kako izgledajo grafi
         st.area_chart(np.random.randn(30, 3))        
         st.line_chart(np.random.randn(30, 3))        
         st.bar_chart(np.random.randn(30, 3))      
