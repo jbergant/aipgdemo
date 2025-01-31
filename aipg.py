@@ -269,7 +269,7 @@ if st.session_state.selected_nav == 2:
                         image_url = response.data[0].url  
                         st.session_state.regenerated_idea_image_url= image_url
                         st.image(image_url, caption=st.session_state.regenerated_idea, use_container_width=True)
-                    st.write(st.session_state.regenerated_idea)
+    
 
                 except Exception as e:
                     st.error(f"Error: {e}")
