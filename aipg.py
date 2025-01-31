@@ -3,7 +3,9 @@ import numpy as np
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 import time
-
+from openai import OpenAI
+api_key = st.secrets["openai"]["api_key"]
+client = OpenAI(api_key=api_key)
 def typewriter(text: str, speed: int):
     tokens = text.split()
     container = st.empty()
@@ -11,6 +13,8 @@ def typewriter(text: str, speed: int):
         curr_full_text = " ".join(tokens[:index])
         container.markdown(curr_full_text)
         time.sleep(1 / speed)
+
+
 
 
 st.set_page_config(layout="wide")
@@ -157,48 +161,79 @@ if st.session_state.selected_nav == 1:
         for message in st.session_state.messages:
             if message["role"] == "user":
                 with st.chat_message("user", avatar=message["avatar"]):
-                    typewriter(text=message["content"], speed=speed)
-
-
-
+                    if 'selected_idea' in st.session_state:
+                        st.write(message["content"])
+                    else:
+                        typewriter(text=message["content"], speed=speed)
 
         st.subheader("Product Ideas")
 
-        col1, col2, col3 = st.columns([1, 1, 1])  
 
-        with col1:
-            st.image("images/mango1.jpeg", caption="Coca Cola Natural Mango")
-            st.markdown("""
-            **Coca Cola Natural Mango**:
-            - Made with real mango puree
-            - No added sugar
-            - Refreshing and natural taste
-            """)
-            if st.button("Select idea", key="idea1"):
-                st.session_state.selected_idea = "Coca Cola Natural Mango"
-                set_selected_nav(2)
-        with col2:    
-            st.image("images/mango2.jpeg", caption="Coca Cola Natural Strawberry")
-            st.markdown("""
-            **Coca Cola Natural Strawberry**:
-            - Made with real strawberry puree
-            - No added sugar
-            - Refreshing and natural taste
-            """)
-            if st.button("Select idea", key="idea2"):
-                st.session_state.selected_idea = "Coca Cola Natural Strawberry"
-                set_selected_nav(2)
-        with col3:    
-            st.image("images/mango3.jpeg", caption="Coca Cola Natural Strawberry Mango")
-            st.markdown("""
-            **Coca Cola Natural Strawberry Mango**:
-            - Made with real strawberry mango puree
-            - No added sugar
-            - Refreshing and natural taste
-            """)    
-            if st.button("Select idea", key="idea3"):
-                st.session_state.selected_idea = "Coca Cola Natural Strawberry Mango"  
-                set_selected_nav(2)              
+        if 'ideas' not in st.session_state:
+            st.session_state.ideas = [
+                {
+                    "prompt": "Coca Cola Natural Mango",
+                    "description": """
+                    **Coca Cola Natural Mango**:
+                    - Made with real mango puree
+                    - No added sugar
+                    - Refreshing and natural taste
+                    """,
+                    "image_url": ""
+                },
+                {
+                    "prompt": "Coca Cola Natural Strawberry",
+                    "description": """
+                    **Coca Cola Natural Strawberry**:
+                    - Made with real strawberry puree
+                    - No added sugar
+                    - Refreshing and natural taste
+                    """,
+                    "image_url": ""
+                },
+                {
+                    "prompt": "Coca Cola Natural Strawberry Mango",
+                    "description": """
+                    **Coca Cola Natural Strawberry Mango**:
+                    - Made with real strawberry mango puree
+                    - No added sugar
+                    - Refreshing and natural taste
+                    """,
+                    "image_url": ""
+                }
+            ]
+
+        col1, col2, col3 = st.columns([1, 1, 1])  
+        
+        for i, idea in enumerate(st.session_state.ideas):
+            col = [col1, col2, col3][i]
+            with col:
+                prompt = idea["prompt"]
+                description = idea["description"]
+                if idea["image_url"]=="":  # If image URL is not already generated
+                    with st.spinner("Generating image..."):
+                        try:
+                            response = client.images.generate(
+                                model="dall-e-3",
+                                prompt=prompt,
+                                size="1024x1024",
+                                quality="standard",
+                                n=1,
+                            )
+                            image_url = response.data[0].url  # Get the image URL
+                            st.session_state.ideas[i]["image_url"] = image_url  # Store the image URL in session state
+                        except Exception as e:
+                            st.error(f"Error: {e}")
+                else:
+                    image_url = idea["image_url"]
+
+                st.image(image_url, caption=prompt, use_container_width=True)
+                st.markdown(description)
+                if st.button("Select idea", key=f"idea{i+1}"):
+                    st.session_state.selected_idea = {"name": prompt, "description": description, "image_url": image_url}
+                    set_selected_nav(2)
+
+    
     with right_col:
         st.subheader("Recommendations")   
         followup = """
@@ -214,57 +249,101 @@ if st.session_state.selected_nav == 1:
               
 
 if st.session_state.selected_nav == 2:
-    st.title("Product refinement")
-    # st.subheader("AI inovation LAB insights")        
-    # followup = """
-    # **Conclusions:**
+    # st.write(st.session_state)
+    if 'regenerated_idea' in st.session_state and 'regenerated_idea_description' in st.session_state:
+        col1, col2, = st.columns([2, 1])  
+        with col1:
+            if 'regenerated_idea_image_url' in st.session_state:
+                st.image(st.session_state.regenerated_idea_image_url, caption=st.session_state.regenerated_idea, use_container_width=True)
+                st.write(st.session_state.regenerated_idea)
+            else:    
+                try:
+                    response = client.images.generate(
+                        model="dall-e-3",
+                        prompt=st.session_state.regenerated_idea,
+                        size="1024x1024",
+                        quality="standard",
+                        n=1,
+                    )
+                    image_url = response.data[0].url  
+                    st.session_state.regenerated_idea_image_url= image_url
+                    st.image(image_url, caption=st.session_state.regenerated_idea, use_container_width=True)
+                    st.write(st.session_state.regenerated_idea)
 
-    # **Refine the Flavor Profile with Natural Ingredients**: To cater to both taste preferences and health-conscious consumers, refine the mango flavor using natural mango puree or extracts, and reduce the sugar content. This can improve the product’s authenticity and appeal to health-conscious segments, while still maintaining the refreshing Coca-Cola experience.
+                except Exception as e:
+                    st.error(f"Error: {e}")
+        with col2:
+            if 'regenerated_idea_description' in st.session_state:
+                st.subheader(st.session_state.regenerated_idea)
+                st.markdown(st.session_state.regenerated_idea_description)
 
-    # **Target Regional Preferences and Position as a Functional Beverage**: Conduct regional flavor testing to identify local preferences (e.g., tropical fruit variants) and customize marketing strategies accordingly. Position **Coca-Cola Mango Boost** not just as a flavored soft drink, but as a functional beverage with added benefits like vitamins or electrolytes to attract health-focused consumers, especially within younger demographics.
+        col1, col2 = st.columns([9, 1])
+        with col2:
+            if(st.button("To virtual consumer panel")):
+                set_selected_nav(3)                    
+    elif 'selected_idea' in st.session_state:
 
-    # """
-    # st.markdown(followup)
-
-
-
-    st.subheader("Preferred product idea generated by the Innovation lab")
-    col1, col2, = st.columns([2, 1])  
-    with col1:
-        if 'selected_idea' in st.session_state:
-            if st.session_state.selected_idea == "Coca Cola Natural Mango":
-                st.image("images/mango1.jpeg", caption="Coca Cola Natural Mango", use_container_width=True)
-            elif st.session_state.selected_idea == "Coca Cola Natural Strawberry":
-                st.image("images/mango2.jpeg", caption="Coca Cola Natural Strawberry", use_container_width=True)
-            elif st.session_state.selected_idea == "Coca Cola Natural Strawberry Mango":
-                st.image("images/mango3.jpeg", caption="Coca Cola Natural Strawberry Mango", use_container_width=True)
-        else:
-            st.text("No product idea selected.")
-    with col2:
-        if 'selected_idea' in st.session_state:
-            st.markdown(f"""
-            **{st.session_state.selected_idea}**:
-            - Dairy-free
-            - Vegan-friendly
-            - Infused with natural flavors
-            """)
-        else:
-            st.text("No product idea selected.")
+        st.subheader("Preferred product idea generated by the Innovation lab")
+        col1, col2, = st.columns([2, 1])  
+        with col1:
+            st.image(st.session_state.selected_idea["image_url"], caption=st.session_state.selected_idea["name"], use_container_width=True)
+        with col2:
+            st.subheader(st.session_state.selected_idea["name"])
+            st.markdown(st.session_state.selected_idea["description"])
 
 
-    st.subheader("Refine the product")
-    user_idea = st.text_area("Share your product idea or feedback here")
+        st.subheader("Refine the product")
+        user_idea = st.text_area("Share your product idea or feedback here:")
 
-    if st.button("Submit comments"):
-        if user_idea:
-            with st.spinner("Working on your idea..."):
-                time.sleep(2)  
-            st.success("To be implemented!")
+        if st.button("Submit comments"):
+            if user_idea:
+                with st.spinner("Working on your idea..."):
+                    try:
+                        prompt = f"Rewrite the following image prompt for a product based on the user comments:\n\nOld Prompt: {st.session_state.selected_idea["name"]}\n\n Old product description: {st.session_state.selected_idea["description"]} \n\nUser Comments: {user_idea}. Return only the prompt!"
+                        st.write(prompt)
 
-    col1, col2 = st.columns([9, 1])
-    with col2:
-        if(st.button("To virtual consumer panel")):
-            set_selected_nav(3)            
+                        response = client.chat.completions.create(
+                            model="gpt-4o",
+                            messages=[
+                                {"role": "developer", "content": "You are a helpful prompt writing assistant."},
+                                {
+                                    "role": "user",
+                                    "content": prompt
+                                }
+                            ]
+                        )
+
+                        new_prompt = response.choices[0].message.content.strip()
+                        st.write(new_prompt)        
+                        st.session_state.regenerated_idea = new_prompt
+                        prompt = f"Rewrite the following product description based on the user comments:\n\nOld Product: {st.session_state.selected_idea["name"]}\n\n Old product description: {st.session_state.selected_idea["description"]} \n\nUser Comments: {user_idea} \n\nNew Product: {new_prompt}. Return only the product description!"
+                        st.write(prompt)
+
+                        response = client.chat.completions.create(
+                            model="gpt-4o",
+                            messages=[
+                                {"role": "developer", "content": "You are a helpful assistant."},
+                                {
+                                    "role": "user",
+                                    "content": prompt
+                                }
+                            ]
+                        )
+
+                        new_product_description = response.choices[0].message.content.strip()                        
+
+                        st.session_state.regenerated_idea_description = new_product_description
+                        st.subheader("bbbb " + new_product_description)
+                        st.rerun()
+                    except Exception as e:
+                        st.error(f"Error: {e}")                    
+    
+        col1, col2 = st.columns([9, 1])
+        with col2:
+            if(st.button("To virtual consumer panel")):
+                set_selected_nav(3)       
+    else:
+        st.text("No product idea selected.")                     
 
 if st.session_state.selected_nav == 3:
     st.title("Virtual consumer panel")
