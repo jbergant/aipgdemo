@@ -258,16 +258,17 @@ if st.session_state.selected_nav == 2:
                 st.write(st.session_state.regenerated_idea)
             else:    
                 try:
-                    response = client.images.generate(
-                        model="dall-e-3",
-                        prompt=st.session_state.regenerated_idea,
-                        size="1024x1024",
-                        quality="standard",
-                        n=1,
-                    )
-                    image_url = response.data[0].url  
-                    st.session_state.regenerated_idea_image_url= image_url
-                    st.image(image_url, caption=st.session_state.regenerated_idea, use_container_width=True)
+                    with st.spinner("Generating image..."):
+                        response = client.images.generate(
+                            model="dall-e-3",
+                            prompt=st.session_state.regenerated_idea,
+                            size="1024x1024",
+                            quality="standard",
+                            n=1,
+                        )
+                        image_url = response.data[0].url  
+                        st.session_state.regenerated_idea_image_url= image_url
+                        st.image(image_url, caption=st.session_state.regenerated_idea, use_container_width=True)
                     st.write(st.session_state.regenerated_idea)
 
                 except Exception as e:
@@ -300,7 +301,7 @@ if st.session_state.selected_nav == 2:
                 with st.spinner("Working on your idea..."):
                     try:
                         prompt = f"Rewrite the following image prompt for a product based on the user comments:\n\nOld Prompt: {st.session_state.selected_idea["name"]}\n\n Old product description: {st.session_state.selected_idea["description"]} \n\nUser Comments: {user_idea}. Return only the prompt!"
-                        st.write(prompt)
+                        # st.write(prompt)
 
                         response = client.chat.completions.create(
                             model="gpt-4o",
@@ -314,10 +315,10 @@ if st.session_state.selected_nav == 2:
                         )
 
                         new_prompt = response.choices[0].message.content.strip()
-                        st.write(new_prompt)        
+                        # st.write(new_prompt)        
                         st.session_state.regenerated_idea = new_prompt
                         prompt = f"Rewrite the following product description based on the user comments:\n\nOld Product: {st.session_state.selected_idea["name"]}\n\n Old product description: {st.session_state.selected_idea["description"]} \n\nUser Comments: {user_idea} \n\nNew Product: {new_prompt}. Return only the product description!"
-                        st.write(prompt)
+                        # st.write(prompt)
 
                         response = client.chat.completions.create(
                             model="gpt-4o",
@@ -333,7 +334,7 @@ if st.session_state.selected_nav == 2:
                         new_product_description = response.choices[0].message.content.strip()                        
 
                         st.session_state.regenerated_idea_description = new_product_description
-                        st.subheader("bbbb " + new_product_description)
+                        # st.subheader("bbbb " + new_product_description)
                         st.rerun()
                     except Exception as e:
                         st.error(f"Error: {e}")                    
