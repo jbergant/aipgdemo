@@ -3,6 +3,9 @@ import numpy as np
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 import time
+import pandas as pd
+import seaborn as sns
+
 from openai import OpenAI
 api_key = st.secrets["openai"]["api_key"]
 client = OpenAI(api_key=api_key)
@@ -66,6 +69,14 @@ with col6:
 
 if st.session_state.selected_nav == 0:
     st.title("Product brief")
+    context = """Coca-Cola Mango is an idea for a new, fruit-infused cola variant. The goal is to explore whether a tropical twist on the classic Coca-Cola taste could excite consumers. The product would balance the familiar cola profile with a hint of ripe mango, offering a refreshing, potentially exotic experience.
+
+Key Questions:
+
+- How strong should the mango flavor be?
+- Should this be a limited-edition or permanent SKU?
+- Does the market perceive mango as a complementary or competing flavor to cola?
+"""
     sample_product_brief = """Product Name: Coca-Cola Mango (Working Title)
 
 Category: Carbonated Soft Drinks
@@ -116,12 +127,30 @@ Feature: Questions & Hypotheses
 - Should it be priced at parity with existing flavored Coke variants?
 - Would a higher price point position it as a premium, exotic offering?"""
 
-    product_description = st.text_area("Write product brief:", height=600, placeholder=sample_product_brief)
+    product_name = st.text_input("Product Name", 
+        placeholder="Coca-Cola Mango",
+        value="Coca-Cola Mango"
+    )
+
+    context = st.text_area("Context:", 
+        height=400, 
+        placeholder=context,
+        value=context
+    )
 
     product_image = st.file_uploader("Upload product idea image", type=["jpg", "jpeg", "png"])
 
     if product_image is not None:
         st.image(product_image, caption="Uploaded product idea image", use_column_width=True)
+
+    col1, col2 = st.columns([7, 1])
+    with col2:
+        if product_name and context:
+            generate = st.button("Generate product brief")
+
+
+    if generate:
+        product_brief = st.text_area("Product Brief:", value=sample_product_brief, height=1200)
 
     st.title("Coming soon")
 
@@ -136,39 +165,7 @@ if st.session_state.selected_nav == 1:
     st.title("AI inovation LAB")
     left_col, right_col = st.columns([2, 1])  
     with left_col:   
-        speed = 101
-    
-        if 'messages' not in st.session_state:
-            st.session_state.messages = [
-                {"role": "user", "person":"product manager", "content": "Hi, I'm Alex, the product manager.", "avatar": "👨‍💼"},
-                {"role": "user", "person":"marketing specialist", "content": "Hello, I'm Jamie, the marketing specialist.", "avatar": "👩‍💼"},
-                {"role": "user", "person":"design lead", "content": "Hey, I'm Taylor, the design lead.", "avatar": "👨‍🎨"},
-                {"role": "user", "person":"data analyst", "content": "Hi, I'm Jordan, the data analyst.", "avatar": "👩‍🔬"},
-                {"role": "user", "person":"product manager", "content": "We need to improve our new product idea: a chocolate bar for people with allergies to milk, gluten, and eggs. Any thoughts?", "avatar": "👨‍💼"},
-                {"role": "user", "person":"marketing specialist", "content": "I think we should highlight the health benefits and the fact that it's allergen-free in our marketing campaigns.", "avatar": "👩‍💼"},
-                {"role": "user", "person":"design lead", "content": "Agreed. We should also make the packaging visually appealing and clearly indicate that it's allergen-free.", "avatar": "👨‍🎨"},
-                {"role": "user", "person":"data analyst", "content": "From the data, we can see a growing trend in demand for allergen-free products. We should leverage this in our product positioning.", "avatar": "👩‍🔬"},
-                {"role": "user", "person":"product manager", "content": "Great points. Jamie, can you work on a marketing strategy that emphasizes these benefits?", "avatar": "👨‍💼"},
-                {"role": "user", "person":"marketing specialist", "content": "Sure, I'll draft a strategy that focuses on health benefits and allergen-free aspects.", "avatar": "👩‍💼"},
-                {"role": "user", "person":"design lead", "content": "I'll start working on the packaging design. Any specific colors or themes we should consider?", "avatar": "👨‍🎨"},
-                {"role": "user", "person":"product manager", "content": "Let's go with earthy tones to emphasize the natural ingredients.", "avatar": "👨‍💼"},
-                {"role": "user", "person":"data analyst", "content": "I'll gather more data on consumer preferences for allergen-free products to support our strategy.", "avatar": "👩‍🔬"},
-                {"role": "user", "person":"product manager", "content": "Perfect. Let's reconvene next week to review our progress.", "avatar": "👨‍💼"}
-            ]
-
-
-
-        for message in st.session_state.messages:
-            if message["role"] == "user":
-                with st.chat_message("user", avatar=message["avatar"]):
-                    if 'selected_idea' in st.session_state:
-                        st.write(message["content"])
-                    else:
-                        typewriter(text=message["content"], speed=speed)
-
         st.subheader("Product Ideas")
-
-
         if 'ideas' not in st.session_state:
             st.session_state.ideas = [
                 {
@@ -179,7 +176,7 @@ if st.session_state.selected_nav == 1:
                     - No added sugar
                     - Refreshing and natural taste
                     """,
-                    "image_url": ""
+                    "image_url": "images/m1.webp"
                 },
                 {
                     "prompt": "Coca Cola Natural Strawberry",
@@ -189,7 +186,7 @@ if st.session_state.selected_nav == 1:
                     - No added sugar
                     - Refreshing and natural taste
                     """,
-                    "image_url": ""
+                    "image_url": "images/mm.jpeg"
                 },
                 {
                     "prompt": "Coca Cola Natural Strawberry Mango",
@@ -199,7 +196,7 @@ if st.session_state.selected_nav == 1:
                     - No added sugar
                     - Refreshing and natural taste
                     """,
-                    "image_url": ""
+                    "image_url": "images/m3.jpeg"
                 }
             ]
 
@@ -242,6 +239,39 @@ if st.session_state.selected_nav == 1:
         **Target Regional Preferences and Position as a Functional Beverage**: Conduct regional flavor testing to identify local preferences (e.g., tropical fruit variants) and customize marketing strategies accordingly. Position **Coca-Cola Mango Boost** not just as a flavored soft drink, but as a functional beverage with added benefits like vitamins or electrolytes to attract health-focused consumers, especially within younger demographics.
         """  
         st.markdown(followup)
+
+
+
+    st.subheader("AI inovation LAB discussion log")   
+    speed = 101
+
+    if 'messages' not in st.session_state:
+        st.session_state.messages = [
+            {"role": "user", "person":"product manager", "content": "Hi, I'm Alex, the product manager.", "avatar": "👨‍💼"},
+            {"role": "user", "person":"marketing specialist", "content": "Hello, I'm Jamie, the marketing specialist.", "avatar": "👩‍💼"},
+            {"role": "user", "person":"design lead", "content": "Hey, I'm Taylor, the design lead.", "avatar": "👨‍🎨"},
+            {"role": "user", "person":"data analyst", "content": "Hi, I'm Jordan, the data analyst.", "avatar": "👩‍🔬"},
+            {"role": "user", "person":"product manager", "content": "We need to improve our new product idea: a chocolate bar for people with allergies to milk, gluten, and eggs. Any thoughts?", "avatar": "👨‍💼"},
+            {"role": "user", "person":"marketing specialist", "content": "I think we should highlight the health benefits and the fact that it's allergen-free in our marketing campaigns.", "avatar": "👩‍💼"},
+            {"role": "user", "person":"design lead", "content": "Agreed. We should also make the packaging visually appealing and clearly indicate that it's allergen-free.", "avatar": "👨‍🎨"},
+            {"role": "user", "person":"data analyst", "content": "From the data, we can see a growing trend in demand for allergen-free products. We should leverage this in our product positioning.", "avatar": "👩‍🔬"},
+            {"role": "user", "person":"product manager", "content": "Great points. Jamie, can you work on a marketing strategy that emphasizes these benefits?", "avatar": "👨‍💼"},
+            {"role": "user", "person":"marketing specialist", "content": "Sure, I'll draft a strategy that focuses on health benefits and allergen-free aspects.", "avatar": "👩‍💼"},
+            {"role": "user", "person":"design lead", "content": "I'll start working on the packaging design. Any specific colors or themes we should consider?", "avatar": "👨‍🎨"},
+            {"role": "user", "person":"product manager", "content": "Let's go with earthy tones to emphasize the natural ingredients.", "avatar": "👨‍💼"},
+            {"role": "user", "person":"data analyst", "content": "I'll gather more data on consumer preferences for allergen-free products to support our strategy.", "avatar": "👩‍🔬"},
+            {"role": "user", "person":"product manager", "content": "Perfect. Let's reconvene next week to review our progress.", "avatar": "👨‍💼"}
+        ]
+
+
+
+    for message in st.session_state.messages:
+        if message["role"] == "user":
+            with st.chat_message("user", avatar=message["avatar"]):
+                if 'selected_idea' in st.session_state:
+                    st.write(message["content"])
+                else:
+                    typewriter(text=message["content"], speed=speed)
 
 
     st.title("Coming soon")
@@ -362,6 +392,44 @@ if st.session_state.selected_nav == 3:
 
         st.write(f"Filtering panelists for age group: {age_filter} and gender: {gender_filter}")
 
+    st.title("Total Addressable Market (TAM) Visualization")
+
+    col1, col2, col3 = st.columns([1, 1, 2])  
+    with col1:
+        total_customers = 100000000
+        # User inputs for dynamic TAM calculation
+        price = st.number_input("Enter Price ($ per unit)", min_value=1, value=50)
+        purchases_per_month = st.number_input("Enter Purchases per Month (avg)", min_value=1, value=2)
+        st.write(f"Total Potential Customers: {total_customers}")
+
+    with col2:
+        # Calculate TAM
+        TAM = price * purchases_per_month * total_customers * 12  # Annualized TAM
+
+        # Plot TAM as a circle
+        fig, ax = plt.subplots(figsize=(5, 5))
+        circle = plt.Circle((0, 0), 1, color='blue', alpha=0.3)  # Blue circle
+        ax.add_patch(circle)
+
+        # Display TAM value inside the circle
+        ax.text(0, 0, f"TAM\n${TAM/1e9:.1f}B", ha='center', va='center', fontsize=18, fontweight="bold", color="black")
+
+        # Remove axes for clean look
+        ax.set_xlim(-1.2, 1.2)
+        ax.set_ylim(-1.2, 1.2)
+        ax.set_xticks([])
+        ax.set_yticks([])
+        ax.set_frame_on(False)
+
+        # Display the plot
+        st.pyplot(fig)
+
+
+
+
+
+
+
     st.subheader("Product uniqueness")
     st.bar_chart(np.random.randn(30, 3))   
     st.title("Comming soon")
@@ -444,9 +512,9 @@ if st.session_state.selected_nav == 4:
 
         # Create the graph
         fig, ax = plt.subplots()
-        ax.plot(purchase_consideration, price, marker='o', linestyle='-', color='b')
-        ax.set_xlabel("Purchasing Consideration (% of Target Population)")
-        ax.set_ylabel("Price ($)")
+        ax.plot(price, purchase_consideration, marker='o', linestyle='-', color='b')
+        ax.set_xlabel("Price ($)")
+        ax.set_ylabel("Purchasing Consideration (% of Target Population)")
         ax.set_title("Demand Curve")
         ax.grid(True)
 
@@ -457,6 +525,54 @@ if st.session_state.selected_nav == 4:
         st.write("### Interpretation:")
         st.write("- As price increases, fewer consumers are willing to consider purchasing.")
         st.write("- This follows the typical demand curve behavior.")
+
+
+        age_categories = {
+            "20-30": "blue",
+            "30-40": "green",
+            "40-50": "red",
+            "50-60": "purple",
+            "60-70": "orange",
+            "70-80": "brown"
+        }
+
+        # Generate synthetic data for demonstration
+        np.random.seed(42)
+        data = []
+        for age_group, color in age_categories.items():
+            relevance = np.random.rand(10) * 10  # Random values for relevance
+            uniqueness = np.random.rand(10) * 10  # Random values for uniqueness
+            for r, u in zip(relevance, uniqueness):
+                data.append([age_group, r, u])
+
+        df = pd.DataFrame(data, columns=["Age Group", "Relevance", "Uniqueness"])
+
+        # Streamlit app layout
+        st.title("Insights Parametric Graph")
+        st.write("This graph visualizes two metrics (Relevance & Uniqueness) per age segment.")
+
+        # Plotting
+        plt.figure(figsize=(8, 6))
+        sns.scatterplot(
+            data=df, x="Relevance", y="Uniqueness", hue="Age Group", palette=age_categories
+        )
+
+        plt.xlabel("Relevance")
+        plt.ylabel("Uniqueness")
+        plt.title("Segmentation According to Age")
+        # Move the legend below the graph
+        plt.legend(title="Age Group", loc="upper center", bbox_to_anchor=(0.5, -0.15), ncol=3)
+
+        # Adjust layout to fit the legend
+        plt.tight_layout()
+
+        # Show plot in Streamlit
+        st.pyplot(plt)
+
+
+
+
+
 
 
         
