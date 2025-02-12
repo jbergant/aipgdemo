@@ -378,19 +378,13 @@ if st.session_state.selected_nav == 2:
 
 if st.session_state.selected_nav == 3:
     st.title("Virtual consumer panel")
-    col1, col2, = st.columns([2, 1])   
 
-    with col1:
-        st.subheader("Panelists")
-        st.image("https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?q=80&w=900&auto=format&fit=crop&ixlib=rb-4.0.3", caption="America", use_container_width=True)
-    
-    with col2:
-        st.subheader("Filter panelists by:")
+    st.subheader("Filter panelists by:")
 
-        age_filter = st.selectbox("Age", ["<20", "20-30", "30-40", "40-50", "50-60", "60-70", "70-80", "80+"])
-        gender_filter = st.selectbox("Gender", ["Male", "Female"])
+    age_filter = st.selectbox("Age", ["<20", "20-30", "30-40", "40-50", "50-60", "60-70", "70-80", "80+"])
+    gender_filter = st.selectbox("Gender", ["Male", "Female"])
 
-        st.write(f"Filtering panelists for age group: {age_filter} and gender: {gender_filter}")
+    st.write(f"Filtering panelists for age group: {age_filter} and gender: {gender_filter}")
 
     st.title("Total Addressable Market (TAM) Visualization")
 
@@ -425,13 +419,6 @@ if st.session_state.selected_nav == 3:
         st.pyplot(fig)
 
 
-
-
-
-
-
-    st.subheader("Product uniqueness")
-    st.bar_chart(np.random.randn(30, 3))   
     st.title("Comming soon")
     st.text("Simulate real life situations")  
 
@@ -569,17 +556,7 @@ if st.session_state.selected_nav == 4:
         # Show plot in Streamlit
         st.pyplot(plt)
 
-
-
-
-
-
-
-        
-        st.subheader("Extra data") 
-        st.area_chart(np.random.randn(30, 3))        
-        st.line_chart(np.random.randn(30, 3))        
-        st.bar_chart(np.random.randn(30, 3))      
+     
 
     with col2:
         st.subheader("Filter insights by:")
