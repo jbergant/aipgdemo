@@ -17,7 +17,9 @@ def typewriter(text: str, speed: int):
         container.markdown(curr_full_text)
         time.sleep(1 / speed)
 
-
+price_grap_x = 50
+purchases_per_month_graph_x =2
+total_customers_graph_x = 16000000
 
 
 st.set_page_config(layout="wide")
@@ -271,7 +273,8 @@ if st.session_state.selected_nav == 1:
                 if 'selected_idea' in st.session_state:
                     st.write(message["content"])
                 else:
-                    typewriter(text=message["content"], speed=speed)
+                    st.write(message["content"])
+                    # typewriter(text=message["content"], speed=speed)
 
 
     st.title("Coming soon")
@@ -369,7 +372,7 @@ if st.session_state.selected_nav == 2:
                     except Exception as e:
                         st.error(f"Error: {e}")                    
     
-        col1, col2 = st.columns([9, 1])
+        col1, col2 = st.columns([5, 1])
         with col2:
             if(st.button("To virtual consumer panel")):
                 set_selected_nav(3)       
@@ -380,9 +383,25 @@ if st.session_state.selected_nav == 3:
     st.title("Virtual consumer panel")
 
     st.subheader("Filter panelists by:")
+    # Define potential customers based on age and gender
+    potential_customers = {
+        "<20": {"Male": 5000000, "Female": 5100000},
+        "20-30": {"Male": 15000000, "Female": 16000000},
+        "30-40": {"Male": 20200000, "Female": 19000000},
+        "40-50": {"Male": 15000000, "Female": 15000000},
+        "50-60": {"Male": 8000000, "Female": 10000000},
+        "60-70": {"Male": 5000000, "Female": 4300000},
+        "70-80": {"Male": 3000000, "Female": 8600000},
+        "80+": {"Male": 800000, "Female": 600000},
+    }
 
+    # Age and gender filters
     age_filter = st.selectbox("Age", ["<20", "20-30", "30-40", "40-50", "50-60", "60-70", "70-80", "80+"])
     gender_filter = st.selectbox("Gender", ["Male", "Female"])
+
+    # Calculate total customers based on selected filters
+    total_customers_graph_x = potential_customers[age_filter][gender_filter]
+    st.session_state.total_customers_graph_x = total_customers_graph_x
 
     st.write(f"Filtering panelists for age group: {age_filter} and gender: {gender_filter}")
 
@@ -390,15 +409,17 @@ if st.session_state.selected_nav == 3:
 
     col1, col2, col3 = st.columns([1, 1, 2])  
     with col1:
-        total_customers = 100000000
+        
         # User inputs for dynamic TAM calculation
-        price = st.number_input("Enter Price ($ per unit)", min_value=1, value=50)
-        purchases_per_month = st.number_input("Enter Purchases per Month (avg)", min_value=1, value=2)
-        st.write(f"Total Potential Customers: {total_customers}")
+        st.session_state.price_grap_x = st.number_input("Enter Price ($ per unit)", min_value=1, value=50)
+      
+        st.session_state.purchases_per_month_graph_x = st.number_input("Enter Purchases per Month (avg)", min_value=1, value=2)
+       
+        st.write(f"Total potential customers: {st.session_state.get('total_customers_graph_x')}")
 
     with col2:
         # Calculate TAM
-        TAM = price * purchases_per_month * total_customers * 12  # Annualized TAM
+        TAM = st.session_state.get('price_grap_x') * st.session_state.get('purchases_per_month_graph_x') * st.session_state.get('total_customers_graph_x') * 12  # Annualized TAM
 
         # Plot TAM as a circle
         fig, ax = plt.subplots(figsize=(5, 5))
@@ -431,12 +452,6 @@ if st.session_state.selected_nav == 4:
     st.title("Final insights") 
     col1, col2, = st.columns([2, 1])     
     with col1:
-
-
-
-
-
-
         # Sample Data
         data = {
             "Purchase Intent": {"score": 3.9, "norm": 4.0},
@@ -558,12 +573,62 @@ if st.session_state.selected_nav == 4:
 
      
 
+        st.title("Market Visualization: TAM vs SAM")
+
+
+        # User inputs for dynamic TAM and SAM calculation
+        price = st.number_input("Enter Price ($ per unit)", min_value=1, value=st.session_state.get('price_grap_x'))
+        purchases_per_month = st.number_input("Enter Purchases per Month (avg)", min_value=1, value=st.session_state.get('purchases_per_month_graph_x'))
+        total_customers = st.number_input("Enter Total Potential Customers", min_value=1000, value=st.session_state.get('total_customers_graph_x'))
+        capture_percentage=20
+        st.write(f"Potential Customers Captured (SAM): {capture_percentage}%")
+        # capture_percentage = st.slider("Enter % of Potential Customers Captured (SAM)", min_value=1, max_value=100, value=20)
+        
+        # Calculate TAM
+        TAM = price * purchases_per_month * total_customers * 12 
+        SAM = TAM * (capture_percentage / 100)  # SAM is a percentage of TAM
+
+        # Plot TAM & SAM as nested circles
+        fig, ax = plt.subplots(figsize=(6, 6))
+
+        # Draw TAM (Large outer circle)
+        tam_circle = plt.Circle((0, 0), 1, color='blue', alpha=0.3, label="TAM") 
+        ax.add_patch(tam_circle)
+
+        # Draw SAM (Smaller inner circle)
+        sam_radius = (SAM / TAM)  # Scale SAM relative to TAM
+        sam_circle = plt.Circle((0, 0), sam_radius, color='green', alpha=0.5, label="SAM")
+        ax.add_patch(sam_circle)
+
+        # Display TAM value inside the larger circle
+        ax.text(0, 0.5, f"TAM\n${TAM/1e9:.1f}B", ha='center', va='center', fontsize=16, fontweight="bold", color="black")
+
+        # Display SAM value inside the smaller circle
+        ax.text(0, -0.2, f"SAM\n${SAM/1e9:.1f}B", ha='center', va='center', fontsize=14, fontweight="bold", color="black")
+
+        # Remove axes for a clean look
+        ax.set_xlim(-1.2, 1.2)
+        ax.set_ylim(-1.2, 1.2)
+        ax.set_xticks([])
+        ax.set_yticks([])
+        ax.set_frame_on(False)
+
+        # Display the plot
+        st.pyplot(fig)
+
+
     with col2:
         st.subheader("Filter insights by:")
 
         age_filter = st.selectbox("Age", ["<20", "20-30", "30-40", "40-50", "50-60", "60-70", "70-80", "80+"])
         gender_filter = st.selectbox("Gender", ["Male", "Female"])
+        metric_filter = st.multiselect(
+            "Select Performance Metrics",
+            ["Purchase Intent", "Unique And Different", "Relevance", "Overall Appeal"],
+            default=["Purchase Intent", "Unique And Different"]
+        )
 
+        st.write(f"Filtering insights for metrics: {', '.join(metric_filter)}")
         st.write(f"Filtering insights for age group: {age_filter} and gender: {gender_filter}")
 
         # Placeholder for filtered insights logic
