@@ -652,7 +652,7 @@ if st.session_state.selected_nav == 4:
             color="Age Group",  # Color points by age group
             title="Segmentation (Relevance & Uniqueness) According to Age",
             labels={"Relevance": "Relevance", "Uniqueness": "Uniqueness"},
-            hover_data={"Relevance": True, "Uniqueness": True, "Age Group": True, "Age": True, "Gender": True, "Region": True},  # Enables hover tooltips
+            hover_data={"Relevance": True, "Uniqueness": True, "Age Group": False, "Age": True, "Gender": True, "Region": True},  # Enables hover tooltips
         )
 
         # Move legend to the right with more space
