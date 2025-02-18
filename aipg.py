@@ -2,6 +2,7 @@ import streamlit as st
 import numpy as np
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
+import plotly.express as px
 import time
 import pandas as pd
 import seaborn as sns
@@ -20,7 +21,11 @@ def typewriter(text: str, speed: int):
 price_grap_x = 50
 purchases_per_month_graph_x =2
 total_customers_graph_x = 16000000
+separator = '''
 
+---
+
+'''
 
 st.set_page_config(layout="wide")
 
@@ -382,8 +387,7 @@ if st.session_state.selected_nav == 2:
 if st.session_state.selected_nav == 3:
     st.title("Virtual consumer panel")
 
-    st.subheader("Filter panelists by:")
-    # Define potential customers based on age and gender
+
     potential_customers = {
         "<20": {"Male": 5000000, "Female": 5100000},
         "20-30": {"Male": 15000000, "Female": 16000000},
@@ -395,19 +399,34 @@ if st.session_state.selected_nav == 3:
         "80+": {"Male": 800000, "Female": 600000},
     }
 
-    # Age and gender filters
-    age_filter = st.selectbox("Age", ["<20", "20-30", "30-40", "40-50", "50-60", "60-70", "70-80", "80+"])
-    gender_filter = st.selectbox("Gender", ["Male", "Female"])
+
+    col1, col2, col3, col4, col5 = st.columns([2, 1, 1, 1, 8])  
+
+    with col1:
+        st.text("Filter panelists by age:", help="Filter by age group")
+
+    with col2:
+        age_filter = st.selectbox("Age", ["<20", "20-30", "30-40", "40-50", "50-60", "60-70", "70-80", "80+"], label_visibility="collapsed")
+    with col3:
+        st.text("or gender:", help="Filter by gender")
+    with col4:    
+        gender_filter = st.selectbox("Gender", ["Male", "Female"], label_visibility="collapsed")
 
     # Calculate total customers based on selected filters
     total_customers_graph_x = potential_customers[age_filter][gender_filter]
     st.session_state.total_customers_graph_x = total_customers_graph_x
 
-    st.write(f"Filtering panelists for age group: {age_filter} and gender: {gender_filter}")
+    col1, col2, col3 = st.columns([4, 1, 4])
+    with col2:
+        if(st.button("RUN SIMULATION")):
+            set_selected_nav(4)    
 
-    st.title("Total Addressable Market (TAM) Visualization")
 
-    col1, col2, col3 = st.columns([1, 1, 2])  
+
+    st.markdown(separator)
+    st.subheader("Total Addressable Market (TAM) Visualization")
+
+    col1, col2, col3 = st.columns([1, 1, 3])  
     with col1:
         
         # User inputs for dynamic TAM calculation
@@ -438,9 +457,46 @@ if st.session_state.selected_nav == 3:
 
         # Display the plot
         st.pyplot(fig)
+    with col3:
+        st.markdown("""
+        #### What is TAM and how it is calculated?
+        - **Total Addressable Market (TAM)** represents the total revenue opportunity available for a product or service.
+        - **TAM = number of customers X annual value per customer (AVC)**
+        - AVC = **product price X number of purchases per month X number of months in a year**
+        """)
+
+    st.markdown(separator)
+    st.subheader("Competitors on the marker")    
+    competitors = [
+        {
+            "name": "Pepsi Mango",
+            "description": "Pepsi with a hint of mango flavor.",
+            "image_url": "https://sweet-shop.si/2747-large_default/pepsi-max-mango-zero-330ml.jpg"
+        },
+        {
+            "name": "Dr Pepper Cherry",
+            "description": "Dr Pepper with a cherry twist.",
+            "image_url": "https://ameriskedobrote.si/wp-content/uploads/2022/12/Dr-Pepper-Cherry-355ml.jpg"
+        },
+        {
+            "name": "Sprite Tropical Mix",
+            "description": "Sprite with tropical fruit flavors.",
+            "image_url": "https://louisianapantry.com/cdn/shop/files/tropicalspriteonabeachbackgroundwithfruitsaroundthebottom.jpg?v=1696525285"
+        }
+    ]
 
 
-    st.title("Comming soon")
+    coll1, coll2, coll3 = st.columns(3)
+    for i, competitor in enumerate(competitors):
+        col = [coll1, coll2, coll3][i % 3]
+        with col:
+            st.image(competitor["image_url"], caption=competitor["name"], use_container_width=False, width=150)
+            st.markdown(f"**{competitor['name']}**: {competitor['description']}")
+
+
+
+    st.markdown(separator)
+    st.subheader("Comming soon")
     st.text("Simulate real life situations")  
 
     col1, col2 = st.columns([9, 1])
@@ -450,29 +506,58 @@ if st.session_state.selected_nav == 3:
 
 if st.session_state.selected_nav == 4:
     st.title("Final insights") 
-    col1, col2, = st.columns([2, 1])     
+    st.subheader("Concept Evaluation Dashboard")
+    st.markdown("#### Performance Metrics")
+    col1, col2, col3, col4, col5 = st.columns([2, 2, 1, 1, 8])  
+
     with col1:
-        # Sample Data
-        data = {
-            "Purchase Intent": {"score": 3.9, "norm": 4.0},
-            "Unique And Different": {"score": 3.9, "norm": 3.9},
-            "Relevance": {"score": 4.0, "norm": 4.1},
-            "Overall Appeal": {"score": 3.9, "norm": 4.2},
-        }
+        st.text("Filter insights by age:", help="Filter by age group")
 
-        # Color function based on performance
-        def get_color(score, norm):
-            if score >= norm:
-                return "#6AB04C"  # Green (Above Norm)
-            elif score >= norm - 0.2:
-                return "#F7CA18"  # Yellow (In Line)
-            else:
-                return "#E55039"  # Red (Below Norm)
+    with col2:
+        age_filter = st.selectbox("Age", ["<20", "20-30", "30-40", "40-50", "50-60", "60-70", "70-80", "80+"], label_visibility="collapsed")
+    with col3:
+        st.text("or gender:", help="Filter by gender")
+    with col4:    
+        gender_filter = st.selectbox("Gender", ["Male", "Female"], label_visibility="collapsed")
 
-        # Streamlit UI
-        st.subheader("Concept Evaluation Dashboard")
-        st.write("### Performance Metrics")
 
+
+    data = {
+        "Purchase Intent": {"score": 3.9, "norm": 4.0},
+        "Unique And Different": {"score": 3.9, "norm": 3.9},
+        "Relevance": {"score": 4.0, "norm": 4.1},
+        "Overall Appeal": {"score": 3.9, "norm": 4.2},
+    }
+
+    # Color function based on performance
+    def get_color(score, norm):
+        if score >= norm:
+            return "#6AB04C"  # Green (Above Norm)
+        elif score >= norm - 0.2:
+            return "#F7CA18"  # Yellow (In Line)
+        else:
+            return "#E55039"  # Red (Below Norm)
+
+    # TODO: add data from an API
+    data = {
+        "Purchase Intent": {"score": 3.9, "norm": 4.0},
+        "Unique And Different": {"score": 3.9, "norm": 3.9},
+        "Relevance": {"score": 4.0, "norm": 4.1},
+        "Overall Appeal": {"score": 3.9, "norm": 4.2},
+    }
+
+    # Color function based on performance
+    def get_color(score, norm):
+        if score >= norm:
+            return "#6AB04C"  # Green (Above Norm)
+        elif score >= norm - 0.2:
+            return "#F7CA18"  # Yellow (In Line)
+        else:
+            return "#E55039"  # Red (Below Norm)
+
+
+    col1, col2, col3 = st.columns([8, 1, 2])
+    with col1:
         # Create Donut Charts
         cols = st.columns(len(data))  # Creates equal column sections
         for i, (metric, values) in enumerate(data.items()):
@@ -491,96 +576,136 @@ if st.session_state.selected_nav == 4:
             fig.update_layout(
                 showlegend=False,
                 title={
-                    "text": f"<b>{metric}</b><br>{score} (Norm: {norm})",
-                    "y": 0.9, "x": 0.5, "xanchor": "center", "yanchor": "top",
-                    "font": dict(size=14)
+                "text": f"<b>{metric}</b>",
+                "y": 0.9, "x": 0.5, "xanchor": "center", "yanchor": "top",
+                "font": dict(size=25)
                 },
+                annotations=[
+                dict(
+                    text=f"{score}",
+                    x=0.5, y=0.5, font_size=40, showarrow=False
+                )
+                ],
                 margin=dict(l=20, r=20, t=40, b=20)
             )
             
-            cols[i].plotly_chart(fig, use_container_width=True)
-
-        st.write("### Legend")
-        st.markdown("- **🟢 Green**: Significantly above norm\n- **🟡 Yellow**: In line with norm\n- **🔴 Red**: Below norm")
-
-
-        # Sample data (Price vs Purchase Consideration %)
-        price = np.array([0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4])
-        purchase_consideration = np.array([90, 80, 65, 50, 35, 25, 15, 5])
-
-        # Streamlit UI
-        st.subheader("Demand Curve: Price vs Purchase Consideration")
-        st.write("This graph shows how the percentage of target consumers considering purchase changes with price.")
-
-        # Create the graph
-        fig, ax = plt.subplots()
-        ax.plot(price, purchase_consideration, marker='o', linestyle='-', color='b')
-        ax.set_xlabel("Price ($)")
-        ax.set_ylabel("Purchasing Consideration (% of Target Population)")
-        ax.set_title("Demand Curve")
-        ax.grid(True)
-
-        # Display the graph in Streamlit
-        st.pyplot(fig)
-
-        # Explanation
-        st.write("### Interpretation:")
-        st.write("- As price increases, fewer consumers are willing to consider purchasing.")
-        st.write("- This follows the typical demand curve behavior.")
+            cols[i].plotly_chart(fig, use_container_width=True, key="chart_" + str(i))
+    with col3:
+        st.text("")
+        st.text("")
+        st.markdown("""
+        #### Legend
+        - **🟢 Green**: Significantly above norm
+        - **🟡 Yellow**: In line with norm
+        - **🔴 Red**: Below norm
+        """)
 
 
-        age_categories = {
-            "20-30": "blue",
-            "30-40": "green",
-            "40-50": "red",
-            "50-60": "purple",
-            "60-70": "orange",
-            "70-80": "brown"
-        }
+    # Sample data (Price vs Purchase Consideration %)
+    price = np.array([0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4])
+    purchase_consideration = np.array([90, 80, 65, 50, 35, 25, 15, 5])
+    df = pd.DataFrame({"Price ($)": price, "Purchase Consideration (%)": purchase_consideration})
+    # Streamlit UI
+    st.subheader("Demand Curve: Price vs Purchase Consideration")
+    st.write("This graph shows how the percentage of target consumers considering purchase changes with price.")
 
-        # Generate synthetic data for demonstration
-        np.random.seed(42)
-        data = []
-        for age_group, color in age_categories.items():
-            relevance = np.random.rand(10) * 10  # Random values for relevance
-            uniqueness = np.random.rand(10) * 10  # Random values for uniqueness
-            for r, u in zip(relevance, uniqueness):
-                data.append([age_group, r, u])
+    # Create an interactive Plotly graph
+    fig = px.line(
+        df,
+        x="Price ($)",
+        y="Purchase Consideration (%)",
+        markers=True,
+        title="Demand Curve",
+        hover_data={"Price ($)": True, "Purchase Consideration (%)": True}  # Enables tooltips
+    )
 
-        df = pd.DataFrame(data, columns=["Age Group", "Relevance", "Uniqueness"])
+    # Show the interactive chart
+    st.plotly_chart(fig)
 
-        # Streamlit app layout
-        st.title("Insights Parametric Graph")
-        st.write("This graph visualizes two metrics (Relevance & Uniqueness) per age segment.")
+    # Explanation
+    st.write("### Interpretation:")
+    st.write("- As price increases, fewer consumers are willing to consider purchasing.")
+    st.write("- This follows the typical demand curve behavior.")
 
-        # Plotting
-        plt.figure(figsize=(8, 6))
-        sns.scatterplot(
-            data=df, x="Relevance", y="Uniqueness", hue="Age Group", palette=age_categories
+
+    age_categories = {
+        "20-30": "blue",
+        "30-40": "green",
+        "40-50": "red",
+        "50-60": "purple",
+        "60-70": "orange",
+        "70-80": "brown"
+    }
+
+    # Generate synthetic data for demonstration
+    np.random.seed(42)
+    data = []
+    for age_group, color in age_categories.items():
+        relevance = np.random.rand(10) * 10  # Random values for relevance
+        uniqueness = np.random.rand(10) * 10  # Random values for uniqueness
+        for r, u in zip(relevance, uniqueness):
+            data.append([age_group, r, u])
+
+    df = pd.DataFrame(data, columns=["Age Group", "Relevance", "Uniqueness"])
+
+    # Streamlit app layout
+    st.title("Insights Parametric Graph")
+    metric_filter = st.multiselect(
+        "Select Performance Metrics",
+        ["Purchase Intent", "Unique And Different", "Relevance", "Overall Appeal"],
+        default=["Purchase Intent", "Unique And Different"]
+    )
+    st.write(f"Filtering insights for metrics: {', '.join(metric_filter)}")
+
+    st.write("This graph visualizes two metrics (Relevance & Uniqueness) per age segment.")
+
+
+
+    age_groups = ["18-24", "25-34", "35-44", "45-54", "55+"]
+    df = pd.DataFrame({
+        "Relevance": np.random.rand(20) * 100,
+        "Uniqueness": np.random.rand(20) * 100,
+        "Age Group": np.random.choice(age_groups, 20)
+    })
+
+    # Create a Plotly scatter plot with hover tooltips
+    fig = px.scatter(
+        df,
+        x="Relevance",
+        y="Uniqueness",
+        color="Age Group",  # Color points by age group
+        title="Segmentation According to Age",
+        labels={"Relevance": "Relevance", "Uniqueness": "Uniqueness"},
+        hover_data={"Relevance": True, "Uniqueness": True, "Age Group": True},  # Enables hover tooltips
+    )
+
+    # Move legend to the bottom
+    fig.update_layout(
+        legend=dict(
+            title="Age Group",
+            orientation="h",
+            yanchor="top",
+            y=-0.2,
+            xanchor="center",
+            x=0.5
         )
+    )
 
-        plt.xlabel("Relevance")
-        plt.ylabel("Uniqueness")
-        plt.title("Segmentation According to Age")
-        # Move the legend below the graph
-        plt.legend(title="Age Group", loc="upper center", bbox_to_anchor=(0.5, -0.15), ncol=3)
+    # Show interactive Plotly chart in Streamlit
+    st.plotly_chart(fig)
 
-        # Adjust layout to fit the legend
-        plt.tight_layout()
+    
 
-        # Show plot in Streamlit
-        st.pyplot(plt)
+    
 
-     
 
+    if 'price_grap_x' in st.session_state and 'purchases_per_month_graph_x' in st.session_state and 'total_customers_graph_x' in st.session_state:
         st.title("Market Visualization: TAM vs SAM")
-
-
         # User inputs for dynamic TAM and SAM calculation
         price = st.number_input("Enter Price ($ per unit)", min_value=1, value=st.session_state.get('price_grap_x'))
         purchases_per_month = st.number_input("Enter Purchases per Month (avg)", min_value=1, value=st.session_state.get('purchases_per_month_graph_x'))
         total_customers = st.number_input("Enter Total Potential Customers", min_value=1000, value=st.session_state.get('total_customers_graph_x'))
-        capture_percentage=20
+        capture_percentage = 20
         st.write(f"Potential Customers Captured (SAM): {capture_percentage}%")
         # capture_percentage = st.slider("Enter % of Potential Customers Captured (SAM)", min_value=1, max_value=100, value=20)
         
@@ -617,19 +742,4 @@ if st.session_state.selected_nav == 4:
         st.pyplot(fig)
 
 
-    with col2:
-        st.subheader("Filter insights by:")
 
-        age_filter = st.selectbox("Age", ["<20", "20-30", "30-40", "40-50", "50-60", "60-70", "70-80", "80+"])
-        gender_filter = st.selectbox("Gender", ["Male", "Female"])
-        metric_filter = st.multiselect(
-            "Select Performance Metrics",
-            ["Purchase Intent", "Unique And Different", "Relevance", "Overall Appeal"],
-            default=["Purchase Intent", "Unique And Different"]
-        )
-
-        st.write(f"Filtering insights for metrics: {', '.join(metric_filter)}")
-        st.write(f"Filtering insights for age group: {age_filter} and gender: {gender_filter}")
-
-        # Placeholder for filtered insights logic
-        st.text("Filtered insights will be displayed here based on the selected filters.")
