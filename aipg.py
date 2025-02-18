@@ -400,23 +400,26 @@ if st.session_state.selected_nav == 3:
     }
 
 
-    col1, col2, col3, col4, col5 = st.columns([2, 1, 1, 1, 8])  
+    col1, col2, col3, col4, col5 = st.columns([1, 2, 1, 2, 1])  
 
     with col1:
         st.text("Filter panelists by age:", help="Filter by age group")
 
     with col2:
-        age_filter = st.selectbox("Age", ["<20", "20-30", "30-40", "40-50", "50-60", "60-70", "70-80", "80+"], label_visibility="collapsed")
+        age_filter = st.multiselect("Age", ["<20", "20-30", "30-40", "40-50", "50-60", "60-70", "70-80", "80+"], default=["20-30", "30-40"], label_visibility="collapsed")
     with col3:
         st.text("or gender:", help="Filter by gender")
     with col4:    
-        gender_filter = st.selectbox("Gender", ["Male", "Female"], label_visibility="collapsed")
+        gender_filter = st.multiselect("Gender", ["Male", "Female"], default=["Male", "Female"], label_visibility="collapsed")
 
     # Calculate total customers based on selected filters
-    total_customers_graph_x = potential_customers[age_filter][gender_filter]
+    total_customers_graph_x = 0
+    for age in age_filter:
+        for gender in gender_filter:
+            total_customers_graph_x += potential_customers.get(age, {}).get(gender, 0)
     st.session_state.total_customers_graph_x = total_customers_graph_x
 
-    col1, col2, col3 = st.columns([4, 1, 4])
+    col1, col2, col3 = st.columns([6, 1, 1])
     with col2:
         if(st.button("RUN SIMULATION")):
             set_selected_nav(4)    
@@ -612,15 +615,21 @@ if st.session_state.selected_nav == 4:
         "70-80": "brown"
     }
     # Generate synthetic data for demonstration
-    np.random.seed(42)
+    regions = ["Northeast", "Southwest", "West", "Southeast", "Midwest"]
+    genders = ["Male", "Female"]
+    ages = ["18", "19", "20", "21", "22", "23", "24"]
+
     data = []
     for age_group, color in age_categories.items():
         relevance = np.random.rand(10) * 10  # Random values for relevance
         uniqueness = np.random.rand(10) * 10  # Random values for uniqueness
         for r, u in zip(relevance, uniqueness):
-            data.append([age_group, r, u])
+            age = np.random.choice(ages)
+            gender = np.random.choice(genders)
+            region = np.random.choice(regions)
+            data.append([age_group, r, u, age, gender, region])
 
-    df = pd.DataFrame(data, columns=["Age Group", "Relevance", "Uniqueness"])
+    df = pd.DataFrame(data, columns=["Age Group", "Relevance", "Uniqueness", "Age", "Gender", "Region"])
 
     # Streamlit app layout
     st.subheader("Segment analysis")
@@ -632,14 +641,6 @@ if st.session_state.selected_nav == 4:
             ["Purchase Intent", "Unique And Different", "Relevance", "Overall Appeal"],
             default=["Purchase Intent", "Unique And Different"]
         )
-   
-
-    age_groups = ["18-24", "25-34", "35-44", "45-54", "55+"]
-    df = pd.DataFrame({
-        "Relevance": np.random.rand(20) * 100,
-        "Uniqueness": np.random.rand(20) * 100,
-        "Age Group": np.random.choice(age_groups, 20)
-    })
 
     col1, col2 = st.columns([8, 1])
     with col1: 
@@ -651,7 +652,7 @@ if st.session_state.selected_nav == 4:
             color="Age Group",  # Color points by age group
             title="Segmentation (Relevance & Uniqueness) According to Age",
             labels={"Relevance": "Relevance", "Uniqueness": "Uniqueness"},
-            hover_data={"Relevance": True, "Uniqueness": True, "Age Group": True},  # Enables hover tooltips
+            hover_data={"Relevance": True, "Uniqueness": True, "Age Group": True, "Age": True, "Gender": True, "Region": True},  # Enables hover tooltips
         )
 
         # Move legend to the right with more space
@@ -718,48 +719,55 @@ if st.session_state.selected_nav == 4:
 
 
     with col3:
+        price_grap_x=50
+        purchases_per_month_graph_x=2
+        total_customers_graph_x=16000000
         if 'price_grap_x' in st.session_state and 'purchases_per_month_graph_x' in st.session_state and 'total_customers_graph_x' in st.session_state:
-            st.subheader("Market Visualization: TAM vs SAM")
-            # User inputs for dynamic TAM and SAM calculation
-            price = st.number_input("Enter Price ($ per unit)", min_value=1, value=st.session_state.get('price_grap_x'))
-            purchases_per_month = st.number_input("Enter Purchases per Month (avg)", min_value=1, value=st.session_state.get('purchases_per_month_graph_x'))
-            total_customers = st.number_input("Enter Total Potential Customers", min_value=1000, value=st.session_state.get('total_customers_graph_x'))
-            capture_percentage = 20
-            st.write(f"Potential Customers Captured (SAM): {capture_percentage}%")
-            # capture_percentage = st.slider("Enter % of Potential Customers Captured (SAM)", min_value=1, max_value=100, value=20)
-            
-            # Calculate TAM
-            TAM = price * purchases_per_month * total_customers * 12 
-            SAM = TAM * (capture_percentage / 100)  # SAM is a percentage of TAM
+            price_grap_x = st.session_state.price_grap_x
+            purchases_per_month_graph_x = st.session_state.purchases_per_month_graph_x
+            total_customers_graph_x = st.session_state.total_customers_graph_x
 
-            # Plot TAM & SAM as nested circles
-            fig, ax = plt.subplots(figsize=(6, 6))
+        st.subheader("Market Visualization: TAM vs SAM")
+        # User inputs for dynamic TAM and SAM calculation
+        price = st.number_input("Enter Price ($ per unit)", min_value=1, value=price_grap_x)
+        purchases_per_month = st.number_input("Enter Purchases per Month (avg)", min_value=1, value=purchases_per_month_graph_x)
+        total_customers = st.number_input("Enter Total Potential Customers", min_value=1000, value=total_customers_graph_x)
+        capture_percentage = 20
+        st.write(f"Potential Customers Captured (SAM): {capture_percentage}%")
+        # capture_percentage = st.slider("Enter % of Potential Customers Captured (SAM)", min_value=1, max_value=100, value=20)
+        
+        # Calculate TAM
+        TAM = price * purchases_per_month * total_customers * 12 
+        SAM = TAM * (capture_percentage / 100)  # SAM is a percentage of TAM
 
-            # Draw TAM (Large outer circle)
-            tam_circle = plt.Circle((0, 0), 1, color='blue', alpha=0.3, label="TAM") 
-            ax.add_patch(tam_circle)
+        # Plot TAM & SAM as nested circles
+        fig, ax = plt.subplots(figsize=(6, 6))
 
-            # Draw SAM (Smaller inner circle)
-            sam_radius = (SAM / TAM)  # Scale SAM relative to TAM
-            sam_circle = plt.Circle((0, 0), sam_radius, color='green', alpha=0.5, label="SAM")
-            ax.add_patch(sam_circle)
+        # Draw TAM (Large outer circle)
+        tam_circle = plt.Circle((0, 0), 1, color='blue', alpha=0.3, label="TAM") 
+        ax.add_patch(tam_circle)
 
-            # Display TAM value inside the larger circle
-            ax.text(0, 0.5, f"TAM\n${TAM/1e9:.1f}B", ha='center', va='center', fontsize=16, fontweight="bold", color="black")
+        # Draw SAM (Smaller inner circle)
+        sam_radius = (SAM / TAM)  # Scale SAM relative to TAM
+        sam_circle = plt.Circle((0, 0), sam_radius, color='green', alpha=0.5, label="SAM")
+        ax.add_patch(sam_circle)
 
-            # Display SAM value inside the smaller circle
-            ax.text(0, -0.2, f"SAM\n${SAM/1e9:.1f}B", ha='center', va='center', fontsize=14, fontweight="bold", color="black")
+        # Display TAM value inside the larger circle
+        ax.text(0, 0.5, f"TAM\n${TAM/1e9:.1f}B", ha='center', va='center', fontsize=16, fontweight="bold", color="black")
 
-            # Remove axes for a clean look
-            ax.set_xlim(-1.2, 1.2)
-            ax.set_ylim(-1.2, 1.2)
-            ax.set_xticks([])
-            ax.set_yticks([])
-            ax.set_frame_on(False)
+        # Display SAM value inside the smaller circle
+        ax.text(0, -0.2, f"SAM\n${SAM/1e9:.1f}B", ha='center', va='center', fontsize=14, fontweight="bold", color="black")
 
-            coll1, coll2, coll3 = st.columns([1, 3, 1])
-            with coll2:
-                st.pyplot(fig)
+        # Remove axes for a clean look
+        ax.set_xlim(-1.2, 1.2)
+        ax.set_ylim(-1.2, 1.2)
+        ax.set_xticks([])
+        ax.set_yticks([])
+        ax.set_frame_on(False)
+
+        coll1, coll2, coll3 = st.columns([1, 3, 1])
+        with coll2:
+            st.pyplot(fig)
 
 
 
