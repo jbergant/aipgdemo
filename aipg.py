@@ -600,32 +600,7 @@ if st.session_state.selected_nav == 4:
         - **🔴 Red**: Below norm
         """)
 
-
-    # Sample data (Price vs Purchase Consideration %)
-    price = np.array([0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4])
-    purchase_consideration = np.array([90, 80, 65, 50, 35, 25, 15, 5])
-    df = pd.DataFrame({"Price ($)": price, "Purchase Consideration (%)": purchase_consideration})
-    # Streamlit UI
-    st.subheader("Demand Curve: Price vs Purchase Consideration")
-    st.write("This graph shows how the percentage of target consumers considering purchase changes with price.")
-
-    # Create an interactive Plotly graph
-    fig = px.line(
-        df,
-        x="Price ($)",
-        y="Purchase Consideration (%)",
-        markers=True,
-        title="Demand Curve",
-        hover_data={"Price ($)": True, "Purchase Consideration (%)": True}  # Enables tooltips
-    )
-
-    # Show the interactive chart
-    st.plotly_chart(fig)
-
-    # Explanation
-    st.write("### Interpretation:")
-    st.write("- As price increases, fewer consumers are willing to consider purchasing.")
-    st.write("- This follows the typical demand curve behavior.")
+    st.markdown(separator)
 
 
     age_categories = {
@@ -636,7 +611,6 @@ if st.session_state.selected_nav == 4:
         "60-70": "orange",
         "70-80": "brown"
     }
-
     # Generate synthetic data for demonstration
     np.random.seed(42)
     data = []
@@ -649,17 +623,16 @@ if st.session_state.selected_nav == 4:
     df = pd.DataFrame(data, columns=["Age Group", "Relevance", "Uniqueness"])
 
     # Streamlit app layout
-    st.title("Insights Parametric Graph")
-    metric_filter = st.multiselect(
-        "Select Performance Metrics",
-        ["Purchase Intent", "Unique And Different", "Relevance", "Overall Appeal"],
-        default=["Purchase Intent", "Unique And Different"]
-    )
-    st.write(f"Filtering insights for metrics: {', '.join(metric_filter)}")
-
-    st.write("This graph visualizes two metrics (Relevance & Uniqueness) per age segment.")
-
-
+    st.subheader("Segment analysis")
+    st.markdown("#### Insights Parametric Graph")
+    col1, col2 = st.columns([2, 1])
+    with col1:
+        metric_filter = st.multiselect(
+            "Select performance metrics:",
+            ["Purchase Intent", "Unique And Different", "Relevance", "Overall Appeal"],
+            default=["Purchase Intent", "Unique And Different"]
+        )
+   
 
     age_groups = ["18-24", "25-34", "35-44", "45-54", "55+"]
     df = pd.DataFrame({
@@ -668,78 +641,126 @@ if st.session_state.selected_nav == 4:
         "Age Group": np.random.choice(age_groups, 20)
     })
 
-    # Create a Plotly scatter plot with hover tooltips
-    fig = px.scatter(
-        df,
-        x="Relevance",
-        y="Uniqueness",
-        color="Age Group",  # Color points by age group
-        title="Segmentation According to Age",
-        labels={"Relevance": "Relevance", "Uniqueness": "Uniqueness"},
-        hover_data={"Relevance": True, "Uniqueness": True, "Age Group": True},  # Enables hover tooltips
-    )
-
-    # Move legend to the bottom
-    fig.update_layout(
-        legend=dict(
-            title="Age Group",
-            orientation="h",
-            yanchor="top",
-            y=-0.2,
-            xanchor="center",
-            x=0.5
+    col1, col2 = st.columns([8, 1])
+    with col1: 
+        # Create a Plotly scatter plot with hover tooltips
+        fig = px.scatter(
+            df,
+            x="Relevance",
+            y="Uniqueness",
+            color="Age Group",  # Color points by age group
+            title="Segmentation (Relevance & Uniqueness) According to Age",
+            labels={"Relevance": "Relevance", "Uniqueness": "Uniqueness"},
+            hover_data={"Relevance": True, "Uniqueness": True, "Age Group": True},  # Enables hover tooltips
         )
-    )
 
-    # Show interactive Plotly chart in Streamlit
-    st.plotly_chart(fig)
+        # Move legend to the right with more space
+        fig.update_layout(
+            legend=dict(
+                title=dict(text="Select age group:", font=dict(size=22)),  # Increase legend title font size
+                orientation="v",
+                yanchor="top",
+                y=1,
+                xanchor="left",
+                x=1.1,  # Increase space between graph and legend
+                font=dict(size=18)  # Increase legend font size
+            ),
+            title_font_size=22,  # Increase title font size
+            font=dict(size=18),  # Increase overall font size
+            xaxis=dict(title_font=dict(size=20)),  # Increase x-axis title font size
+            yaxis=dict(title_font=dict(size=20))   # Increase y-axis title font size
+        )
 
-    
+        # Show interactive Plotly chart in Streamlit
+        st.plotly_chart(fig)
 
-    
 
 
-    if 'price_grap_x' in st.session_state and 'purchases_per_month_graph_x' in st.session_state and 'total_customers_graph_x' in st.session_state:
-        st.title("Market Visualization: TAM vs SAM")
-        # User inputs for dynamic TAM and SAM calculation
-        price = st.number_input("Enter Price ($ per unit)", min_value=1, value=st.session_state.get('price_grap_x'))
-        purchases_per_month = st.number_input("Enter Purchases per Month (avg)", min_value=1, value=st.session_state.get('purchases_per_month_graph_x'))
-        total_customers = st.number_input("Enter Total Potential Customers", min_value=1000, value=st.session_state.get('total_customers_graph_x'))
-        capture_percentage = 20
-        st.write(f"Potential Customers Captured (SAM): {capture_percentage}%")
-        # capture_percentage = st.slider("Enter % of Potential Customers Captured (SAM)", min_value=1, max_value=100, value=20)
-        
-        # Calculate TAM
-        TAM = price * purchases_per_month * total_customers * 12 
-        SAM = TAM * (capture_percentage / 100)  # SAM is a percentage of TAM
+    st.markdown(separator)
 
-        # Plot TAM & SAM as nested circles
-        fig, ax = plt.subplots(figsize=(6, 6))
 
-        # Draw TAM (Large outer circle)
-        tam_circle = plt.Circle((0, 0), 1, color='blue', alpha=0.3, label="TAM") 
-        ax.add_patch(tam_circle)
 
-        # Draw SAM (Smaller inner circle)
-        sam_radius = (SAM / TAM)  # Scale SAM relative to TAM
-        sam_circle = plt.Circle((0, 0), sam_radius, color='green', alpha=0.5, label="SAM")
-        ax.add_patch(sam_circle)
 
-        # Display TAM value inside the larger circle
-        ax.text(0, 0.5, f"TAM\n${TAM/1e9:.1f}B", ha='center', va='center', fontsize=16, fontweight="bold", color="black")
 
-        # Display SAM value inside the smaller circle
-        ax.text(0, -0.2, f"SAM\n${SAM/1e9:.1f}B", ha='center', va='center', fontsize=14, fontweight="bold", color="black")
 
-        # Remove axes for a clean look
-        ax.set_xlim(-1.2, 1.2)
-        ax.set_ylim(-1.2, 1.2)
-        ax.set_xticks([])
-        ax.set_yticks([])
-        ax.set_frame_on(False)
 
-        # Display the plot
-        st.pyplot(fig)
+    col1, col2, col3 = st.columns([5, 1, 5])
+
+
+    with col1:
+        # Sample data (Price vs Purchase Consideration %)
+        price = np.array([0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4])
+        purchase_consideration = np.array([90, 80, 65, 50, 35, 25, 15, 5])
+        df = pd.DataFrame({"Price ($)": price, "Purchase Consideration (%)": purchase_consideration})
+        # Streamlit UI
+        st.subheader("Demand Curve: Price vs Purchase Consideration")
+        st.write("This graph shows how the percentage of target consumers considering purchase changes with price.")
+
+        # Create an interactive Plotly graph
+        fig = px.line(
+            df,
+            x="Price ($)",
+            y="Purchase Consideration (%)",
+            markers=True,
+            title="Demand Curve",
+            hover_data={"Price ($)": True, "Purchase Consideration (%)": True}  # Enables tooltips
+        )
+
+        # Show the interactive chart
+        st.plotly_chart(fig)
+
+        # Explanation
+        st.write("### Interpretation:")
+        st.write("- As price increases, fewer consumers are willing to consider purchasing.")
+        st.write("- This follows the typical demand curve behavior.")
+
+
+
+
+    with col3:
+        if 'price_grap_x' in st.session_state and 'purchases_per_month_graph_x' in st.session_state and 'total_customers_graph_x' in st.session_state:
+            st.subheader("Market Visualization: TAM vs SAM")
+            # User inputs for dynamic TAM and SAM calculation
+            price = st.number_input("Enter Price ($ per unit)", min_value=1, value=st.session_state.get('price_grap_x'))
+            purchases_per_month = st.number_input("Enter Purchases per Month (avg)", min_value=1, value=st.session_state.get('purchases_per_month_graph_x'))
+            total_customers = st.number_input("Enter Total Potential Customers", min_value=1000, value=st.session_state.get('total_customers_graph_x'))
+            capture_percentage = 20
+            st.write(f"Potential Customers Captured (SAM): {capture_percentage}%")
+            # capture_percentage = st.slider("Enter % of Potential Customers Captured (SAM)", min_value=1, max_value=100, value=20)
+            
+            # Calculate TAM
+            TAM = price * purchases_per_month * total_customers * 12 
+            SAM = TAM * (capture_percentage / 100)  # SAM is a percentage of TAM
+
+            # Plot TAM & SAM as nested circles
+            fig, ax = plt.subplots(figsize=(6, 6))
+
+            # Draw TAM (Large outer circle)
+            tam_circle = plt.Circle((0, 0), 1, color='blue', alpha=0.3, label="TAM") 
+            ax.add_patch(tam_circle)
+
+            # Draw SAM (Smaller inner circle)
+            sam_radius = (SAM / TAM)  # Scale SAM relative to TAM
+            sam_circle = plt.Circle((0, 0), sam_radius, color='green', alpha=0.5, label="SAM")
+            ax.add_patch(sam_circle)
+
+            # Display TAM value inside the larger circle
+            ax.text(0, 0.5, f"TAM\n${TAM/1e9:.1f}B", ha='center', va='center', fontsize=16, fontweight="bold", color="black")
+
+            # Display SAM value inside the smaller circle
+            ax.text(0, -0.2, f"SAM\n${SAM/1e9:.1f}B", ha='center', va='center', fontsize=14, fontweight="bold", color="black")
+
+            # Remove axes for a clean look
+            ax.set_xlim(-1.2, 1.2)
+            ax.set_ylim(-1.2, 1.2)
+            ax.set_xticks([])
+            ax.set_yticks([])
+            ax.set_frame_on(False)
+
+            coll1, coll2, coll3 = st.columns([1, 3, 1])
+            with coll2:
+                st.pyplot(fig)
+
 
 
 
