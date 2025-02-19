@@ -247,7 +247,7 @@ if st.session_state.selected_nav == 1:
         """  
         st.markdown(followup)
 
-
+    st.markdown(separator)
 
     st.subheader("AI inovation LAB discussion log")   
     speed = 101
@@ -281,7 +281,7 @@ if st.session_state.selected_nav == 1:
                     st.write(message["content"])
                     # typewriter(text=message["content"], speed=speed)
 
-
+    st.markdown(separator)
     st.title("Coming soon")
     st.text("Use real time events data from online sources.")     
               
@@ -330,7 +330,7 @@ if st.session_state.selected_nav == 2:
             st.subheader(st.session_state.selected_idea["name"])
             st.markdown(st.session_state.selected_idea["description"])
 
-
+        st.markdown(separator)
         st.subheader("Refine the product")
         user_idea = st.text_area("Share your product idea or feedback here:")
 
