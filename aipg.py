@@ -427,8 +427,9 @@ if st.session_state.selected_nav == 3:
 
 
     st.markdown(separator)
-    st.subheader("Total Addressable Market (TAM) Visualization")
-
+    st.subheader("Explore your market ")
+    st.markdown("#### Total Addressable Market (TAM) Visualization")
+    st.text("We’ve estimated your market size based on industry benchmarks. Adjust if needed.")
     col1, col2, col3 = st.columns([1, 1, 3])  
     with col1:
         
@@ -462,14 +463,15 @@ if st.session_state.selected_nav == 3:
         st.pyplot(fig)
     with col3:
         st.markdown("""
-        #### What is TAM and how it is calculated?
+        ##### What is TAM and how it is calculated?
         - **Total Addressable Market (TAM)** represents the total revenue opportunity available for a product or service.
         - **TAM = number of customers X annual value per customer (AVC)**
         - AVC = **product price X number of purchases per month X number of months in a year**
         """)
 
     st.markdown(separator)
-    st.subheader("Competitors on the marker")    
+    st.markdown("#### Competitors on the marker")   
+    st.text("Explore your competitors and their product offerings.") 
     competitors = [
         {
             "name": "Pepsi Mango",
