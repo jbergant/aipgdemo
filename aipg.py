@@ -512,7 +512,8 @@ if st.session_state.selected_nav == 3:
 if st.session_state.selected_nav == 4:
     st.title("Final insights") 
     st.subheader("Concept Evaluation Dashboard")
-    st.markdown("#### Performance Metrics")
+    st.markdown("#### Key Metrics ")
+    st.text("See the most important insights from the survey to guide your decisions.")
     col1, col2, col3, col4, col5 = st.columns([2, 2, 1, 1, 8])  
 
     with col1:
@@ -634,7 +635,8 @@ if st.session_state.selected_nav == 4:
     df = pd.DataFrame(data, columns=["Age Group", "Relevance", "Uniqueness", "Age", "Gender", "Region"])
 
     # Streamlit app layout
-    st.subheader("Segment analysis")
+    st.subheader("Segment Analysis")
+    st.text("Understand which customer segments matter most and how they differ.")
     st.markdown("#### Insights Parametric Graph")
     col1, col2 = st.columns([2, 1])
     with col1:
@@ -696,7 +698,8 @@ if st.session_state.selected_nav == 4:
         purchase_consideration = np.array([90, 80, 65, 50, 35, 25, 15, 5])
         df = pd.DataFrame({"Price ($)": price, "Purchase Consideration (%)": purchase_consideration})
         # Streamlit UI
-        st.subheader("Demand Curve: Price vs Purchase Consideration")
+        st.subheader("Pricing Impact")
+        st.write("Explore how pricing changes can maximize demand and market potential.*")
         st.write("This graph shows how the percentage of target consumers considering purchase changes with price.")
 
         # Create an interactive Plotly graph
