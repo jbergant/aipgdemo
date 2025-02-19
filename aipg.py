@@ -183,7 +183,7 @@ if st.session_state.selected_nav == 1:
                     - No added sugar
                     - Refreshing and natural taste
                     """,
-                    "image_url": "images/m1.webp"
+                    "image_url": "images/m1.png"
                 },
                 {
                     "prompt": "Coca Cola Natural Strawberry",
@@ -203,7 +203,7 @@ if st.session_state.selected_nav == 1:
                     - No added sugar
                     - Refreshing and natural taste
                     """,
-                    "image_url": "images/m3.jpeg"
+                    "image_url": "images/cocacola.png"
                 }
             ]
 
@@ -428,7 +428,6 @@ if st.session_state.selected_nav == 3:
 
     st.markdown(separator)
     st.subheader("Explore your market ")
-    st.markdown("#### Total Addressable Market (TAM) Visualization")
     st.text("We’ve estimated your market size based on industry benchmarks. Adjust if needed.")
     col1, col2, col3 = st.columns([1, 1, 3])  
     with col1:
@@ -511,8 +510,7 @@ if st.session_state.selected_nav == 3:
 
 if st.session_state.selected_nav == 4:
     st.title("Final insights") 
-    st.subheader("Concept Evaluation Dashboard")
-    st.markdown("#### Key Metrics ")
+    st.subheader("Key Metrics ")
     st.text("See the most important insights from the survey to guide your decisions.")
     col1, col2, col3, col4, col5 = st.columns([2, 2, 1, 1, 8])  
 
@@ -583,8 +581,8 @@ if st.session_state.selected_nav == 4:
                 showlegend=False,
                 title={
                 "text": f"<b>{metric}</b>",
-                "y": 0.9, "x": 0.5, "xanchor": "center", "yanchor": "top",
-                "font": dict(size=25)
+                "y": 0.85, "x": 0.5, "xanchor": "center", "yanchor": "top",
+                "font": dict(size=18)
                 },
                 annotations=[
                 dict(
@@ -637,7 +635,6 @@ if st.session_state.selected_nav == 4:
     # Streamlit app layout
     st.subheader("Segment Analysis")
     st.text("Understand which customer segments matter most and how they differ.")
-    st.markdown("#### Insights Parametric Graph")
     col1, col2 = st.columns([2, 1])
     with col1:
         metric_filter = st.multiselect(
